@@ -1,0 +1,25 @@
+{
+  "name": "sendy",
+  "version": "1.0.0",
+  "description": "Sendy - Send smarter, not harder. Professional bulk email sender with personalization, inline images, and comprehensive logging",
+  "main": "src/index.js",
+  "scripts": {
+    "send": "node src/index.js",
+    "test": "node src/index.js --dry-run"
+  },
+  "keywords": [
+    "email",
+    "bulk-email",
+    "nodemailer",
+    "personalization"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "nodemailer": "^6.9.7",
+    "dotenv": "^16.3.1",
+    "csv-parser": "^3.0.0",
+    "cli-progress": "^3.12.0",
+    "colors": "^1.4.0"
+  }
+}
