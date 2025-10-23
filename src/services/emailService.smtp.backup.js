@@ -82,10 +82,9 @@ class EmailService {
    * @param {Object} recipient - Recipient data {name, email}
    * @param {string} htmlContent - Processed HTML content
    * @param {string} subject - Email subject
-   * @param {string} replyTo - Optional reply-to email address
    * @returns {Promise<Object>} Send result with recipient info
    */
-  async sendPersonalizedEmail(recipient, htmlContent, subject, replyTo = null) {
+  async sendPersonalizedEmail(recipient, htmlContent, subject) {
     const mailOptions = {
       from: `"${config.sender.name}" <${config.sender.email}>`,
       to: recipient.email,
@@ -94,11 +93,6 @@ class EmailService {
       // Enable inline images via CID
       attachments: this.getInlineImageAttachment(),
     };
-
-    // Add reply-to if provided (so replies go to the user, not Sendy email)
-    if (replyTo) {
-      mailOptions.replyTo = replyTo;
-    }
 
     const result = await this.sendEmailWithRetry(mailOptions);
     

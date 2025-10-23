@@ -23,6 +23,10 @@ const config = {
     subject: process.env.EMAIL_SUBJECT || 'Hello {{Name}}!',
     delay: parseInt(process.env.EMAIL_DELAY) || 2000,
   },
+  email: {
+    subject: process.env.EMAIL_SUBJECT || 'Hello {{Name}}!',
+    delay: parseInt(process.env.EMAIL_DELAY) || 2000,
+  },
   csv: {
     filePath: process.env.CSV_FILE_PATH || './data/emails.csv',
   },

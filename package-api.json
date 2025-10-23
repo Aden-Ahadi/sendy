@@ -1,0 +1,28 @@
+{
+  "name": "sendy-api",
+  "version": "1.0.0",
+  "description": "Sendy - Send smarter, not harder (API Server)",
+  "main": "src/api/server.js",
+  "scripts": {
+    "dev": "nodemon src/api/server.js",
+    "start": "node src/api/server.js",
+    "send": "node src/index.js"
+  },
+  "keywords": ["email", "bulk", "sender", "api", "sendy"],
+  "author": "Aden Ahadi",
+  "license": "MIT",
+  "dependencies": {
+    "nodemailer": "^6.9.7",
+    "dotenv": "^16.3.1",
+    "csv-parser": "^3.0.0",
+    "cli-progress": "^3.12.0",
+    "colors": "^1.4.0",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "multer": "^1.4.5-lts.1",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
