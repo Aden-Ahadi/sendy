@@ -7,16 +7,15 @@ const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
 const { config } = require('../config/config');
-// Use SendGrid if enabled, otherwise use SMTP
-const EmailService = process.env.USE_SENDGRID === 'true' 
-  ? require('../services/emailServiceSendGrid')
-  : require('../services/emailService');
+// Use SMTP email service (SendGrid support removed)
+const EmailService = require('../services/emailService');
 const SenderManagementService = require('../services/senderManagementService');
 const FileParser = require('../utils/fileParser');
 const Logger = require('../utils/logger');
 const TemplateEngine = require('../utils/templateEngine');
 const fs = require('fs');
 const path = require('path');
+const net = require('net');
 
 const app = express();
 const upload = multer({ dest: 'uploads/' });
@@ -34,6 +33,36 @@ app.get('/health', (req, res) => {
     version: '1.0.0',
     timestamp: new Date().toISOString()
   });
+});
+
+
+// Temporary debug endpoint: check TCP connectivity to SMTP host/port
+// Deploy this temporarily on Render, call it once, then remove the route.
+app.get('/api/debug/tcp-check', async (req, res) => {
+  const host = process.env.SMTP_HOST || (config && config.smtp && config.smtp.host) || 'smtp.gmail.com';
+  const port = Number(process.env.SMTP_PORT || (config && config.smtp && config.smtp.port) || 587);
+  const timeoutMs = Number(process.env.EMAIL_TCP_CHECK_TIMEOUT) || 8000;
+
+  const socket = new net.Socket();
+  let done = false;
+
+  const clean = (ok, msg) => {
+    if (done) return;
+    done = true;
+    try { socket.destroy(); } catch (e) {}
+    res.json({ host, port, ok, msg });
+  };
+
+  socket.setTimeout(timeoutMs);
+  socket.on('connect', () => clean(true, 'connected'));
+  socket.on('timeout', () => clean(false, 'timeout'));
+  socket.on('error', (err) => clean(false, String(err)));
+
+  try {
+    socket.connect(port, host);
+  } catch (err) {
+    clean(false, String(err));
+  }
 });
 
 

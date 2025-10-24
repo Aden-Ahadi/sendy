@@ -16,6 +16,9 @@ class EmailService {
    * Initialize Nodemailer transporter
    */
   initializeTransporter() {
+    // Allow enabling extra debug/timeouts via env for temporary troubleshooting on Render
+    const enableDebug = (process.env.EMAIL_TRANSPORT_DEBUG === 'true');
+
     this.transporter = nodemailer.createTransport({
       host: config.smtp.host,
       port: config.smtp.port,
@@ -28,6 +31,12 @@ class EmailService {
       pool: true,
       maxConnections: 5,
       maxMessages: 100,
+      // Helpful debug/timeouts when diagnosing connection issues in cloud hosts
+      logger: enableDebug,
+      debug: enableDebug,
+      connectionTimeout: Number(process.env.EMAIL_CONN_TIMEOUT) || 30000,
+      greetingTimeout: Number(process.env.EMAIL_GREET_TIMEOUT) || 30000,
+      socketTimeout: Number(process.env.EMAIL_SOCKET_TIMEOUT) || 30000,
     });
   }
 
