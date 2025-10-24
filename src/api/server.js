@@ -6,11 +6,13 @@
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
-const jwt = require('jsonwebtoken');
 const { config } = require('../config/config');
-const EmailService = require('../services/emailService');
+// Use SendGrid if enabled, otherwise use SMTP
+const EmailService = process.env.USE_SENDGRID === 'true' 
+  ? require('../services/emailServiceSendGrid')
+  : require('../services/emailService');
 const SenderManagementService = require('../services/senderManagementService');
-const CSVParser = require('../utils/csvParser');
+const FileParser = require('../utils/fileParser');
 const Logger = require('../utils/logger');
 const TemplateEngine = require('../utils/templateEngine');
 const fs = require('fs');
@@ -23,26 +25,6 @@ const upload = multer({ dest: 'uploads/' });
 app.use(cors());
 app.use(express.json());
 
-// JWT Secret (move to .env in production)
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this';
-
-// Authentication middleware
-const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (!token) {
-    return res.status(401).json({ error: 'Access token required' });
-  }
-
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) {
-      return res.status(403).json({ error: 'Invalid or expired token' });
-    }
-    req.user = user;
-    next();
-  });
-};
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -54,31 +36,23 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Authentication endpoint (temporary - will be replaced by Supabase)
-app.post('/api/auth/login', async (req, res) => {
-  const { email, password } = req.body;
-  
-  // TODO: Implement proper authentication with database
-  // For now, simple validation
-  if (email && password) {
-    const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: '7d' });
-    res.json({ 
-      token,
-      user: { email }
-    });
-  } else {
-    res.status(400).json({ error: 'Email and password required' });
-  }
-});
 
 // Create campaign endpoint
-app.post('/api/campaigns/send', authenticateToken, upload.single('csv'), async (req, res) => {
+app.post('/api/campaigns/send', upload.single('recipientsFile'), async (req, res) => {
   try {
-    const { subject, templateId, replyTo } = req.body;
-    const csvFile = req.file;
+    const { subject, templateId, replyTo, emailContent, emailType } = req.body;
+    const recipientsFile = req.file;
 
-    if (!csvFile) {
-      return res.status(400).json({ error: 'CSV file required' });
+    console.log('📧 Campaign Request Received:');
+    console.log('  - Subject:', subject);
+    console.log('  - Reply-To:', replyTo);
+    console.log('  - Email Type:', emailType || 'default');
+    console.log('  - Custom Content:', emailContent ? 'YES' : 'NO');
+    console.log('  - Recipients File:', recipientsFile ? recipientsFile.originalname : 'NO FILE');
+    console.log('  - File Path:', recipientsFile ? recipientsFile.path : 'NO PATH');
+
+    if (!recipientsFile) {
+      return res.status(400).json({ error: 'Recipients file (CSV or Excel) required' });
     }
 
     if (!subject) {
@@ -87,24 +61,61 @@ app.post('/api/campaigns/send', authenticateToken, upload.single('csv'), async (
 
     // Create campaign ID
     const campaignId = `campaign_${Date.now()}`;
-    
-    // Parse CSV
-    const recipients = await CSVParser.parseCSV(csvFile.path);
-    
-    // Load template
-    const templatePath = TemplateEngine.getDefaultTemplatePath();
-    const template = TemplateEngine.loadTemplate(templatePath);
-    
+
+    // Parse recipients from file (CSV or Excel)
+    console.log('📄 Parsing recipients from:', recipientsFile ? recipientsFile.path : 'NO FILE PATH');
+
+    // Debug: log uploaded file info and preview (first 1kb)
+    try {
+      console.log('Uploaded file object:', recipientsFile ? {
+        originalname: recipientsFile.originalname,
+        mimetype: recipientsFile.mimetype,
+        size: recipientsFile.size,
+        path: recipientsFile.path
+      } : null);
+      if (recipientsFile && recipientsFile.path && fs.existsSync(recipientsFile.path)) {
+        const preview = fs.readFileSync(recipientsFile.path, 'utf8').slice(0, 1024);
+        console.log('Uploaded file preview (first 1kb):');
+        console.log(preview);
+      }
+    } catch (dbgErr) {
+      console.warn('Failed to read uploaded file for debug:', dbgErr.message);
+    }
+
+    const recipients = await FileParser.parseRecipients(recipientsFile.path, recipientsFile.originalname);
+    console.log(`✅ Parsed ${recipients.length} recipients:`, recipients);
+
+    // Require custom email content
+    if (!emailContent) {
+      return res.status(400).json({ 
+        error: 'Email content required',
+        message: 'Please provide email content in the emailContent field' 
+      });
+    }
+
+    // Use custom content from frontend
+    const template = emailContent;
+    console.log('✅ Using custom email content from frontend');
+
     // Initialize services
     const emailService = new EmailService();
     const logger = new Logger(`./logs/${campaignId}.json`);
     
-    // Verify SMTP connection
+    // Verify connection (SMTP or SendGrid)
     await emailService.verifyConnection();
     
     // Send emails in background (don't wait)
     sendEmailsAsync(campaignId, recipients, template, subject, emailService, logger, replyTo);
     
+    // Cleanup uploaded file (best-effort)
+    try {
+      if (recipientsFile && recipientsFile.path && fs.existsSync(recipientsFile.path)) {
+        fs.unlinkSync(recipientsFile.path);
+      }
+    } catch (unlinkErr) {
+      console.warn('Failed to remove uploaded file:', unlinkErr.message);
+    }
+
     // Return immediately with campaign info
     res.json({
       success: true,
@@ -114,9 +125,6 @@ app.post('/api/campaigns/send', authenticateToken, upload.single('csv'), async (
       message: 'Campaign started. Emails are being sent in the background.',
       replyTo: replyTo || config.sender.email
     });
-    
-    // Cleanup uploaded file
-    fs.unlinkSync(csvFile.path);
     
   } catch (error) {
     console.error('Campaign creation error:', error);
@@ -128,7 +136,7 @@ app.post('/api/campaigns/send', authenticateToken, upload.single('csv'), async (
 });
 
 // Get campaign status
-app.get('/api/campaigns/:campaignId', authenticateToken, async (req, res) => {
+app.get('/api/campaigns/:campaignId', async (req, res) => {
   try {
     const { campaignId } = req.params;
     const logPath = `./logs/${campaignId}.json`;
@@ -161,7 +169,7 @@ app.get('/api/campaigns/:campaignId', authenticateToken, async (req, res) => {
 });
 
 // Get campaign logs
-app.get('/api/campaigns/:campaignId/logs', authenticateToken, async (req, res) => {
+app.get('/api/campaigns/:campaignId/logs', async (req, res) => {
   try {
     const { campaignId } = req.params;
     const logPath = `./logs/${campaignId}.json`;
@@ -193,7 +201,7 @@ app.get('/api/campaigns/:campaignId/logs', authenticateToken, async (req, res) =
 // ==========================================
 
 // Add verified sender for a user
-app.post('/api/settings/sender', authenticateToken, async (req, res) => {
+app.post('/api/settings/sender', async (req, res) => {
   try {
     const { fromName, fromEmail, replyTo, address, city, country } = req.body;
     
@@ -226,7 +234,7 @@ app.post('/api/settings/sender', authenticateToken, async (req, res) => {
 });
 
 // Get sender verification status
-app.get('/api/settings/sender/:senderId', authenticateToken, async (req, res) => {
+app.get('/api/settings/sender/:senderId', async (req, res) => {
   try {
     const { senderId } = req.params;
     
@@ -245,7 +253,7 @@ app.get('/api/settings/sender/:senderId', authenticateToken, async (req, res) =>
 });
 
 // Resend verification email
-app.post('/api/settings/sender/:senderId/resend', authenticateToken, async (req, res) => {
+app.post('/api/settings/sender/:senderId/resend', async (req, res) => {
   try {
     const { senderId } = req.params;
     
@@ -264,7 +272,7 @@ app.post('/api/settings/sender/:senderId/resend', authenticateToken, async (req,
 });
 
 // Delete sender
-app.delete('/api/settings/sender/:senderId', authenticateToken, async (req, res) => {
+app.delete('/api/settings/sender/:senderId', async (req, res) => {
   try {
     const { senderId } = req.params;
     

@@ -86,18 +86,36 @@ class EmailService {
    * @returns {Promise<Object>} Send result with recipient info
    */
   async sendPersonalizedEmail(recipient, htmlContent, subject, replyTo = null) {
+    // Generate plain text version from HTML
+    const plainText = htmlContent
+      .replace(/<[^>]*>/g, '') // Remove HTML tags
+      .replace(/\s+/g, ' ')    // Collapse whitespace
+      .trim();
+
     const mailOptions = {
       from: `"${config.sender.name}" <${config.sender.email}>`,
       to: recipient.email,
       subject: subject,
       html: htmlContent,
+      text: plainText, // Plain text version improves deliverability
       // Enable inline images via CID
       attachments: this.getInlineImageAttachment(),
+      // Headers to improve deliverability and avoid Promotions tab
+      headers: {
+        'X-Priority': '3',
+        'Importance': 'Normal',
+        'X-Entity-Ref-ID': Math.random().toString(36).substring(7), // Unique ID per email
+        'Precedence': 'bulk',
+        'Auto-Submitted': 'auto-generated',
+      },
     };
 
     // Add reply-to if provided (so replies go to the user, not Sendy email)
     if (replyTo) {
       mailOptions.replyTo = replyTo;
+      // Keep sender name as configured in .env (don't change it)
+      // From will always be: "Sendy <mysendyapp@gmail.com>"
+      // Replies will go to: replyTo address
     }
 
     const result = await this.sendEmailWithRetry(mailOptions);

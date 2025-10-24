@@ -84,20 +84,36 @@ class EmailService {
    * @param {string} subject - Email subject
    * @returns {Promise<Object>} - Result object
    */
-  async sendPersonalizedEmail(recipient, htmlContent, subject) {
+  async sendPersonalizedEmail(recipient, htmlContent, subject, replyTo = null) {
+    // Generate plain text version from HTML
+    const plainText = htmlContent
+      .replace(/<[^>]*>/g, '') // Remove HTML tags
+      .replace(/\s+/g, ' ')    // Collapse whitespace
+      .trim();
+
     const mailOptions = {
       from: {
         email: process.env.SENDER_EMAIL || config.sender.email,
         name: process.env.SENDER_NAME || config.sender.name,
       },
-      to: recipient.Email,
+      to: recipient.email || recipient.Email, // Support both lowercase and uppercase
       subject: subject,
       html: htmlContent,
-      // Optional: add reply-to
-      replyTo: process.env.SENDER_EMAIL || config.sender.email,
+      text: plainText, // Plain text version improves deliverability
+      // Use reply-to if provided, otherwise use sender email
+      replyTo: replyTo || process.env.SENDER_EMAIL || config.sender.email,
     };
 
-    return this.sendEmailWithRetry(mailOptions);
+    const result = await this.sendEmailWithRetry(mailOptions);
+    
+    return {
+      ...result,
+      recipient: {
+        name: recipient.name || recipient.Name,
+        email: recipient.email || recipient.Email,
+      },
+      timestamp: new Date().toISOString(),
+    };
   }
 
   /**
