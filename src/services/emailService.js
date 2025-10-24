@@ -16,28 +16,58 @@ class EmailService {
    * Initialize Nodemailer transporter
    */
   initializeTransporter() {
-    // Allow enabling extra debug/timeouts via env for temporary troubleshooting on Render
+    // Prepare candidate transporter configs (try multiple ports/modes if needed)
     const enableDebug = (process.env.EMAIL_TRANSPORT_DEBUG === 'true');
 
-    this.transporter = nodemailer.createTransport({
-      host: config.smtp.host,
-      port: config.smtp.port,
-      secure: config.smtp.secure,
-      auth: {
-        user: config.smtp.auth.user,
-        pass: config.smtp.auth.pass,
-      },
-      // Additional options for better deliverability
+    const host = process.env.SMTP_HOST || config.smtp.host;
+    const user = process.env.SMTP_USER || (config.smtp.auth && config.smtp.auth.user);
+    const pass = process.env.SMTP_PASS || (config.smtp.auth && config.smtp.auth.pass);
+
+    // Allow overriding the list from env (comma separated list of ports)
+    const portsEnv = process.env.SMTP_TRY_PORTS; // e.g. "465,587"
+    const ports = portsEnv ? portsEnv.split(',').map(p => Number(p.trim())) : [465, 587];
+
+    // Build candidate configs: try secure=true for 465 and secure=false for 587 by default
+    this.candidateConfigs = ports.map(p => ({
+      host,
+      port: p,
+      secure: p === 465, // common convention
+      auth: { user, pass },
       pool: true,
       maxConnections: 5,
       maxMessages: 100,
-      // Helpful debug/timeouts when diagnosing connection issues in cloud hosts
       logger: enableDebug,
       debug: enableDebug,
       connectionTimeout: Number(process.env.EMAIL_CONN_TIMEOUT) || 30000,
       greetingTimeout: Number(process.env.EMAIL_GREET_TIMEOUT) || 30000,
       socketTimeout: Number(process.env.EMAIL_SOCKET_TIMEOUT) || 30000,
-    });
+    }));
+
+    // Fallback: if config.smtp provides explicit port/secure, ensure it's tried first
+    if (config && config.smtp && config.smtp.port) {
+      const explicit = {
+        host: config.smtp.host,
+        port: config.smtp.port,
+        secure: config.smtp.secure,
+        auth: config.smtp.auth,
+        pool: true,
+        maxConnections: 5,
+        maxMessages: 100,
+        logger: enableDebug,
+        debug: enableDebug,
+        connectionTimeout: Number(process.env.EMAIL_CONN_TIMEOUT) || 30000,
+        greetingTimeout: Number(process.env.EMAIL_GREET_TIMEOUT) || 30000,
+        socketTimeout: Number(process.env.EMAIL_SOCKET_TIMEOUT) || 30000,
+      };
+      // Put explicit config at the front unless it's already the first
+      const first = this.candidateConfigs[0];
+      if (!first || first.port !== explicit.port) {
+        this.candidateConfigs.unshift(explicit);
+      }
+    }
+
+    // transporter will be chosen after a successful verifyConnection call
+    this.transporter = null;
   }
 
   /**
@@ -45,12 +75,27 @@ class EmailService {
    * @returns {Promise<boolean>}
    */
   async verifyConnection() {
-    try {
-      await this.transporter.verify();
-      return true;
-    } catch (error) {
-      throw new Error(`SMTP connection failed: ${error.message}`);
+    // Try each candidate transporter until one succeeds
+    const errors = [];
+    for (const cfg of (this.candidateConfigs || [])) {
+      try {
+        const transporter = nodemailer.createTransport(cfg);
+        // Await verify with a per-attempt timeout handled by nodemailer options
+        await transporter.verify();
+        // If verify succeeds, adopt this transporter for future sends
+        this.transporter = transporter;
+        console.log(`SMTP verify succeeded using ${cfg.host}:${cfg.port} secure=${cfg.secure}`);
+        return true;
+      } catch (err) {
+        const msg = `Attempt ${cfg.host}:${cfg.port} failed: ${err.message}`;
+        console.warn(msg);
+        errors.push(msg);
+        // continue to next candidate
+      }
     }
+
+    // If we reach here, all attempts failed
+    throw new Error(`SMTP connection failed: ${errors.join(' | ')}`);
   }
 
   /**
