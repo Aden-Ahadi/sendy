@@ -4,10 +4,10 @@
   "description": "Sendy - Send smarter, not harder. Professional bulk email sender with personalization, inline images, and comprehensive logging",
   "main": "src/index.js",
   "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
     "start": "node src/api/server.js",
     "dev:api": "nodemon src/api/server.js",
-    "dev:ui": "cd frontend && npm run dev",
-    "build": "cd frontend && npm run build",
     "send": "node src/index.js",
     "test": "node src/index.js --dry-run"
   },
