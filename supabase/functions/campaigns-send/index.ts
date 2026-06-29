@@ -313,6 +313,7 @@ Deno.serve(async (req) => {
       total_recipients:  recipients.length,
       reply_to:          replyTo,
       template_shell:    templateShell,
+      email_content:     emailContent,
       status:            'sending',
     });
 

@@ -11,9 +11,15 @@ CREATE TABLE IF NOT EXISTS campaigns (
   failed INTEGER DEFAULT 0,
   status TEXT DEFAULT 'sending' CHECK (status IN ('sending', 'completed', 'failed')),
   reply_to TEXT,
+  template_shell TEXT DEFAULT 'minimal',
+  email_content TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   completed_at TIMESTAMPTZ
 );
+
+-- Run these if the table already existed before the template-shell feature:
+ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS template_shell TEXT DEFAULT 'minimal';
+ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS email_content TEXT;
 
 -- Campaign logs table
 CREATE TABLE IF NOT EXISTS campaign_logs (

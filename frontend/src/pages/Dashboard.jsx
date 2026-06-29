@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { PaperPlaneTilt, EnvelopeSimple, ArrowRight } from '@phosphor-icons/react';
+import { PaperPlaneTilt, EnvelopeSimple, ArrowRight, CircleNotch, X } from '@phosphor-icons/react';
 import { motion, useReducedMotion } from 'motion/react';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -32,24 +32,23 @@ function SubjectDisplay({ subject }) {
 function StatusBadge({ status }) {
   if (status === 'sending') {
     return (
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-blue-50 text-blue-600 border border-blue-100">
-        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+      <span className="inline-flex items-center gap-[5px] px-2.5 py-[5px] rounded-full text-[10px] font-semibold tracking-[0.07em] uppercase bg-[#FBF3DB] text-[#956400]">
+        <CircleNotch size={10} weight="bold" className="animate-spin" />
         Sending
       </span>
     );
   }
   if (status === 'failed') {
     return (
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-red-50 text-red-600 border border-red-100">
-        <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+      <span className="inline-flex items-center gap-[5px] px-2.5 py-[5px] rounded-full text-[10px] font-semibold tracking-[0.07em] uppercase bg-[#FDEBEC] text-[#9F2F2D]">
+        <X size={10} weight="bold" />
         Failed
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-[#f0faf5] text-[#2b9a66] border border-[#c3e9d7]">
-      <span className="w-1.5 h-1.5 rounded-full bg-[#2b9a66]" />
-      Completed
+    <span className="px-2.5 py-[5px] rounded-full text-[10px] font-semibold tracking-[0.07em] uppercase bg-[#EDF3EC] text-[#346538]">
+      Sent
     </span>
   );
 }

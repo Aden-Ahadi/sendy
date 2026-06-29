@@ -18,4 +18,7 @@ export const api = {
 
   getCampaignLogs: (campaignId) =>
     invoke('campaign-logs', { body: { campaignId } }),
+
+  deleteCampaign: (campaignId) =>
+    invoke('campaign-delete', { body: { campaignId } }),
 };

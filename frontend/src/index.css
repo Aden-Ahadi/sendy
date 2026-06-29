@@ -72,6 +72,38 @@
   --radius: 0.625rem;
 }
 
+/* ── Dark / Night theme ──────────────────────────────────────────────────────
+   Warm OLED-tier dark — charcoal pulling from the same ink/cream DNA,
+   not cold blue-black. Canvas: #141412, cards: #1c1b19, bone: #252320.
+*/
+.dark {
+  --background: #141412;
+  --foreground: #edeae4;
+
+  --card:            #1c1b19;
+  --card-foreground: #edeae4;
+  --popover:         #1c1b19;
+  --popover-foreground: #edeae4;
+
+  --primary:            #ea2804;
+  --primary-foreground: #ffffff;
+
+  --secondary:            #252320;
+  --secondary-foreground: #edeae4;
+
+  --muted:            #252320;
+  --muted-foreground: #8a8680;
+
+  --accent:            #252320;
+  --accent-foreground: #edeae4;
+
+  --destructive: #dc2626;
+
+  --border: rgba(255, 250, 240, 0.08);
+  --input:  rgba(255, 250, 240, 0.08);
+  --ring:   #ea2804;
+}
+
 @layer base {
   * { @apply border-border; }
   body {
@@ -96,8 +128,7 @@
   line-height: 1.7;
   color: #202020;
 }
-.tiptap-editor .ProseMirror p { margin-bottom: 12px; }
-.tiptap-editor .ProseMirror p:last-child { margin-bottom: 0; }
+.tiptap-editor .ProseMirror p { margin: 0; }
 .tiptap-editor .ProseMirror h1 {
   font-size: 22px; font-weight: 700;
   letter-spacing: -0.4px; margin: 20px 0 10px;
@@ -107,8 +138,8 @@
   letter-spacing: -0.2px; margin: 18px 0 8px;
 }
 .tiptap-editor .ProseMirror h3 { font-size: 15px; font-weight: 600; margin: 16px 0 6px; }
-.tiptap-editor .ProseMirror ul,
-.tiptap-editor .ProseMirror ol { padding-left: 20px; margin-bottom: 12px; }
+.tiptap-editor .ProseMirror ul { list-style-type: disc;    padding-left: 20px; margin-bottom: 12px; }
+.tiptap-editor .ProseMirror ol { list-style-type: decimal; padding-left: 20px; margin-bottom: 12px; }
 .tiptap-editor .ProseMirror li { margin-bottom: 4px; }
 .tiptap-editor .ProseMirror a {
   color: #ea2804;
