@@ -1,19 +1,22 @@
 import { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft, PaperPlaneTilt, UploadSimple, File, Warning, CheckCircle } from '@phosphor-icons/react';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
+import EmailEditor from '../components/EmailEditor';
 import { api } from '../lib/api';
 
-const PLACEHOLDER_HINT = `Use {{Name}} and {{Email}} anywhere in subject or body.`;
-
 export default function NewCampaign() {
-  const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
   const [subject, setSubject] = useState('');
   const [replyTo, setReplyTo] = useState('');
   const [file, setFile] = useState(null);
   const [dragOver, setDragOver] = useState(false);
-  const [emailContent, setEmailContent] = useState('');
-  const [tab, setTab] = useState('editor'); // 'editor' | 'preview'
+  const [emailHtml, setEmailHtml] = useState('');
+  const [previewTab, setPreviewTab] = useState('editor');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(null);
@@ -31,8 +34,8 @@ export default function NewCampaign() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!file) return setError('Please upload a recipients file.');
-    if (!emailContent.trim()) return setError('Email content cannot be empty.');
+    if (!file) return setError('Upload a recipients file to continue.');
+    if (!emailHtml || emailHtml === '<p></p>') return setError('Email content cannot be empty.');
     setError('');
     setLoading(true);
 
@@ -40,7 +43,7 @@ export default function NewCampaign() {
       const formData = new FormData();
       formData.append('recipientsFile', file);
       formData.append('subject', subject);
-      formData.append('emailContent', emailContent);
+      formData.append('emailContent', emailHtml);
       if (replyTo) formData.append('replyTo', replyTo);
 
       const data = await api.sendCampaign(formData);
@@ -53,63 +56,72 @@ export default function NewCampaign() {
 
   if (success) {
     return (
-      <div>
-        <div style={{ maxWidth: 500, margin: '60px auto', textAlign: 'center' }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>🚀</div>
-          <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 8 }}>Campaign Started!</h2>
-          <p style={{ color: 'var(--text-muted)', marginBottom: 24 }}>
-            Sending to {success.totalRecipients} recipients in the background.
-            Emails are being sent and logged in real time.
-          </p>
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-            <Link to={`/campaigns/${success.campaignId}`} className="btn btn-primary">
-              View Campaign
-            </Link>
-            <Link to="/" className="btn btn-secondary">
-              All Campaigns
-            </Link>
-          </div>
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <div className="w-14 h-14 rounded-full bg-[#f0faf5] flex items-center justify-center mb-5">
+          <CheckCircle size={28} weight="fill" className="text-[#2b9a66]" />
+        </div>
+        <h2 className="text-[20px] font-bold tracking-[-0.025em] text-[#202020] mb-2">Campaign started</h2>
+        <p className="text-[13.5px] text-[#646464] mb-7 max-w-[300px] leading-relaxed">
+          Sending to {success.totalRecipients} recipients in the background.
+        </p>
+        <div className="flex items-center gap-3">
+          <Link to={`/campaigns/${success.campaignId}`} className={cn(buttonVariants({ size: 'sm' }))}>
+            View campaign
+          </Link>
+          <Link to="/" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}>
+            All campaigns
+          </Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ maxWidth: 720 }}>
-      <Link to="/" className="back-link">← Back to Campaigns</Link>
+    <div className="max-w-[640px]">
+      <Link
+        to="/"
+        className="inline-flex items-center gap-1.5 text-[#8d8d8d] hover:text-[#202020] text-[13px] font-medium mb-7 transition-colors duration-150"
+      >
+        <ArrowLeft size={14} />
+        Back
+      </Link>
 
-      <div className="page-header" style={{ marginBottom: 20 }}>
-        <div>
-          <h1>New Campaign</h1>
-          <div className="page-title-sub">{PLACEHOLDER_HINT}</div>
-        </div>
-      </div>
+      <h1 className="text-[22px] font-bold tracking-[-0.025em] text-[#202020] mb-1" style={{ fontFamily: 'var(--font-display)' }}>New campaign</h1>
+      <p className="text-[13px] text-[#646464] mb-7 leading-relaxed">
+        Use <span className="font-medium text-[#202020]">Name</span> and <span className="font-medium text-[#202020]">Email</span> tokens in curly braces to personalize each message.
+      </p>
 
-      <form onSubmit={handleSubmit}>
-        {error && <div className="alert alert-error">{error}</div>}
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {error && (
+          <div className="flex items-center gap-2.5 bg-red-50 border border-red-100 rounded-full px-4 py-3 text-red-600 text-[13px]">
+            <Warning size={14} weight="fill" className="flex-shrink-0" />
+            {error}
+          </div>
+        )}
 
         {/* Subject */}
-        <div className="form-group">
-          <label>
-            Subject
-            <span className="label-hint">supports {'{{Name}}'}</span>
-          </label>
-          <input
+        <div className="space-y-2">
+          <label className="block text-[13px] font-medium text-[#202020]">Subject line</label>
+          <Input
             type="text"
             value={subject}
             onChange={e => setSubject(e.target.value)}
-            placeholder="Hello {{Name}}, you're invited!"
+            placeholder="Hello {{Name}}, here's what's new"
             required
           />
+          <p className="text-[12px] text-[#8d8d8d]">
+            Supports personalization tokens, e.g. {'{{Name}}'}
+          </p>
         </div>
 
+        <Separator className="bg-[rgba(32,32,32,0.08)]" />
+
         {/* Reply-to */}
-        <div className="form-group">
-          <label>
-            Reply-to Email
-            <span className="label-hint">optional — where replies go</span>
+        <div className="space-y-2">
+          <label className="block text-[13px] font-medium text-[#202020]">
+            Reply-to <span className="text-[#8d8d8d] font-normal">optional</span>
           </label>
-          <input
+          <Input
             type="email"
             value={replyTo}
             onChange={e => setReplyTo(e.target.value)}
@@ -117,11 +129,19 @@ export default function NewCampaign() {
           />
         </div>
 
-        {/* Recipients file */}
-        <div className="form-group">
-          <label>Recipients File</label>
+        <Separator className="bg-[rgba(32,32,32,0.08)]" />
+
+        {/* File drop zone */}
+        <div className="space-y-2">
+          <label className="block text-[13px] font-medium text-[#202020]">Recipients file</label>
           <div
-            className={`drop-zone ${dragOver ? 'drag-over' : ''}`}
+            className={`relative border-2 border-dashed rounded-[10px] px-6 py-8 text-center cursor-pointer transition-all duration-150 ${
+              dragOver
+                ? 'border-[#ea2804]/40 bg-[#ea2804]/[0.04]'
+                : file
+                ? 'border-[rgba(32,32,32,0.2)] bg-[#f3f0e8]'
+                : 'border-[rgba(32,32,32,0.15)] hover:border-[rgba(32,32,32,0.3)] hover:bg-[#f3f0e8]/60'
+            }`}
             onDragOver={e => { e.preventDefault(); setDragOver(true); }}
             onDragLeave={() => setDragOver(false)}
             onDrop={handleFileDrop}
@@ -132,77 +152,83 @@ export default function NewCampaign() {
               type="file"
               accept=".csv,.xlsx,.xls"
               onChange={handleFileChange}
-              style={{ display: 'none' }}
+              className="hidden"
             />
-            <div className="drop-zone-icon">📄</div>
-            <div className="drop-zone-text">
-              {file ? file.name : 'Drop CSV or Excel file here'}
-            </div>
-            <div className="drop-zone-sub">
-              {file
-                ? `${(file.size / 1024).toFixed(1)} KB — click to change`
-                : 'Must have Name and Email columns — click to browse'}
-            </div>
+            {file ? (
+              <div className="flex flex-col items-center gap-2">
+                <File size={24} weight="fill" className="text-[#202020]" />
+                <div className="text-[13.5px] font-semibold text-[#202020]">{file.name}</div>
+                <div className="text-[12px] text-[#8d8d8d]">
+                  {(file.size / 1024).toFixed(1)} KB — click to change
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-2">
+                <UploadSimple size={24} className="text-[#8d8d8d]" />
+                <div className="text-[13.5px] font-medium text-[#202020]">Drop CSV or Excel file here</div>
+                <div className="text-[12px] text-[#8d8d8d]">
+                  Must have Name and Email columns — click to browse
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Email content editor */}
-        <div className="form-group">
-          <label>Email Content (HTML)</label>
-          <div className="editor-wrap">
-            <div className="editor-tabs">
-              <button
-                type="button"
-                className={`editor-tab ${tab === 'editor' ? 'active' : ''}`}
-                onClick={() => setTab('editor')}
-              >
-                Editor
-              </button>
-              <button
-                type="button"
-                className={`editor-tab ${tab === 'preview' ? 'active' : ''}`}
-                onClick={() => setTab('preview')}
-              >
-                Preview
-              </button>
+        <Separator className="bg-[rgba(32,32,32,0.08)]" />
+
+        {/* Email editor */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <label className="block text-[13px] font-medium text-[#202020]">Email</label>
+            <div className="flex items-center gap-1 bg-[#f3f0e8] rounded-full p-0.5">
+              {['editor', 'preview'].map(tab => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setPreviewTab(tab)}
+                  className={`px-3.5 py-1.5 text-[12px] font-medium rounded-full transition-all duration-100 ${
+                    previewTab === tab
+                      ? 'bg-white text-[#202020] shadow-sm'
+                      : 'text-[#8d8d8d] hover:text-[#202020]'
+                  }`}
+                >
+                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                </button>
+              ))}
             </div>
-            <div className="editor-body">
-              {tab === 'editor' ? (
-                <textarea
-                  value={emailContent}
-                  onChange={e => setEmailContent(e.target.value)}
-                  placeholder={`<h1>Hello {{Name}}!</h1>\n<p>Your personalized message here...</p>`}
-                  rows={14}
-                  style={{ width: '100%', padding: '12px 14px' }}
+          </div>
+
+          {previewTab === 'editor' ? (
+            <EmailEditor onChange={setEmailHtml} />
+          ) : (
+            <div className="border border-[rgba(32,32,32,0.12)] rounded-[10px] overflow-hidden bg-white min-h-[320px]">
+              {emailHtml && emailHtml !== '<p></p>' ? (
+                <iframe
+                  title="Email preview"
+                  srcDoc={emailHtml
+                    .replace(/\{\{Name\}\}/g, 'Jane')
+                    .replace(/\{\{Email\}\}/g, 'jane@example.com')}
+                  sandbox="allow-same-origin"
+                  className="w-full h-[400px] border-none"
                 />
               ) : (
-                <div className="editor-preview">
-                  {emailContent.trim() ? (
-                    <iframe
-                      title="Email Preview"
-                      srcDoc={emailContent.replace('{{Name}}', 'John').replace('{{Email}}', 'john@example.com')}
-                      sandbox="allow-same-origin"
-                    />
-                  ) : (
-                    <div className="editor-preview-empty">
-                      Write some HTML to see a preview
-                    </div>
-                  )}
+                <div className="flex items-center justify-center h-[320px] text-[#8d8d8d] text-[13px]">
+                  Write some content first to see a preview
                 </div>
               )}
             </div>
-          </div>
+          )}
         </div>
 
-        <div className="form-actions">
-          <button
-            type="submit"
-            className="btn btn-primary btn-lg"
-            disabled={loading}
-          >
-            {loading ? 'Starting campaign…' : '✉ Send Campaign'}
-          </button>
-          <Link to="/" className="btn btn-secondary btn-lg">Cancel</Link>
+        {/* Actions */}
+        <div className="flex items-center gap-3 pt-2">
+          <Button type="submit" disabled={loading}>
+            <PaperPlaneTilt size={14} weight="fill" />
+            {loading ? 'Starting...' : 'Send campaign'}
+          </Button>
+          <Link to="/" className={cn(buttonVariants({ variant: 'ghost' }), 'text-[#646464]')}>
+            Cancel
+          </Link>
         </div>
       </form>
     </div>
