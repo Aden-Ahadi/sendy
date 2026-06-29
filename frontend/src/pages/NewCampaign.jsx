@@ -8,18 +8,149 @@ import { cn } from '@/lib/utils';
 import EmailEditor from '../components/EmailEditor';
 import { api } from '../lib/api';
 
+// ── Email shell preview builder ───────────────────────────────────────────
+// Mirrors the backend shell HTML but uses relative /brand-logo.png for browser preview.
+const BRAND_NAME   = 'Huawei ICT Academy - DIT';
+const BRAND_FOOTER = 'Huawei DIT ICT Academy &nbsp;&middot;&nbsp; P.O.Box 2958 Dar-es-salaam';
+
+const BASE_STYLES = `
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 0; background: #f5f4f0;
+           font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; }
+    p    { margin: 0 0 16px; font-size: 15px; line-height: 1.7; color: #202020; }
+    h1   { margin: 0 0 16px; font-size: 26px; font-weight: 700; line-height: 1.2; color: #111; letter-spacing: -0.5px; }
+    h2   { margin: 0 0 14px; font-size: 21px; font-weight: 700; line-height: 1.2; color: #111; letter-spacing: -0.3px; }
+    h3   { margin: 0 0 12px; font-size: 17px; font-weight: 600; line-height: 1.3; color: #111; }
+    ul, ol { margin: 0 0 16px; padding-left: 24px; }
+    li   { margin-bottom: 6px; font-size: 15px; line-height: 1.7; color: #202020; }
+    a    { color: #c7000a; text-decoration: underline; }
+    strong { font-weight: 700; }
+    em   { font-style: italic; }
+    blockquote { margin: 0 0 16px; padding: 0 0 0 16px; border-left: 3px solid #e0ddd6; color: #646464; font-style: italic; }
+    hr   { margin: 24px 0; border: none; border-top: 1px solid #eaeaea; }
+    code { background: #f3f0e8; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 13px; }
+  </style>
+`;
+
+function buildPreviewHtml(shell, content) {
+  if (!content || content === '<p></p>') return '';
+
+  if (shell === 'branded') {
+    return `<!DOCTYPE html><html><head><meta charset="UTF-8">${BASE_STYLES}</head>
+<body>
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f5f4f0;">
+<tr><td align="center" style="padding:40px 20px;">
+<table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;">
+  <tr><td style="background:#fff;border-radius:8px 8px 0 0;padding:28px 48px;text-align:center;border-bottom:1px solid #eaeaea;">
+    <img src="/brand-logo.png" width="110" height="auto" alt="${BRAND_NAME}" style="display:block;margin:0 auto;max-width:110px;">
+  </td></tr>
+  <tr><td style="background:#fff;padding:40px 48px;">${content}</td></tr>
+  <tr><td style="background:#f9f8f5;border-radius:0 0 8px 8px;padding:20px 48px;border-top:1px solid #eaeaea;text-align:center;font-size:12px;color:#999;line-height:1.8;">
+    ${BRAND_FOOTER}
+  </td></tr>
+</table>
+</td></tr>
+</table>
+</body></html>`;
+  }
+
+  // minimal
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8">${BASE_STYLES}</head>
+<body>
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f5f4f0;">
+<tr><td align="center" style="padding:40px 20px;">
+<table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;">
+  <tr><td style="background:#fff;border-radius:8px;padding:48px;">${content}</td></tr>
+  <tr><td style="padding:24px 0;text-align:center;font-size:12px;color:#999;line-height:1.8;">
+    ${BRAND_FOOTER}
+  </td></tr>
+</table>
+</td></tr>
+</table>
+</body></html>`;
+}
+
+// ── Shell picker thumbnails ────────────────────────────────────────────────
+
+function MinimalThumb() {
+  return (
+    <div className="w-full h-[72px] rounded-[5px] bg-[#f0ede7] overflow-hidden flex items-center justify-center p-2">
+      <div className="w-full h-full bg-white rounded-[4px] px-3 py-2.5 flex flex-col gap-1.5">
+        <div className="h-2 w-2/5 bg-[#d4d0ca] rounded-[2px]" />
+        <div className="h-1.5 w-full bg-[#e8e5de] rounded-[2px]" />
+        <div className="h-1.5 w-4/5 bg-[#e8e5de] rounded-[2px]" />
+        <div className="h-1.5 w-full bg-[#e8e5de] rounded-[2px]" />
+      </div>
+    </div>
+  );
+}
+
+function BrandedThumb() {
+  return (
+    <div className="w-full h-[72px] rounded-[5px] bg-[#f0ede7] overflow-hidden flex flex-col">
+      {/* Logo bar */}
+      <div className="bg-white border-b border-[#eaeaea] h-[22px] flex items-center justify-center flex-shrink-0">
+        <div className="w-7 h-3 bg-[#ccc] rounded-[2px]" />
+      </div>
+      {/* Body */}
+      <div className="flex-1 bg-white px-3 py-2 flex flex-col gap-1.5">
+        <div className="h-1.5 w-2/5 bg-[#d4d0ca] rounded-[2px]" />
+        <div className="h-1.5 w-full bg-[#e8e5de] rounded-[2px]" />
+        <div className="h-1.5 w-3/4 bg-[#e8e5de] rounded-[2px]" />
+      </div>
+      {/* Footer */}
+      <div className="bg-[#f5f4f0] h-[12px] border-t border-[#eaeaea]" />
+    </div>
+  );
+}
+
+const SHELLS = [
+  {
+    id:          'minimal',
+    label:       'Minimal',
+    description: 'Clean white card — content only, no branding chrome',
+    Thumb:       MinimalThumb,
+  },
+  {
+    id:          'branded',
+    label:       'Branded',
+    description: 'Huawei ICT Academy logo header + address footer',
+    Thumb:       BrandedThumb,
+  },
+];
+
+// ── Page ──────────────────────────────────────────────────────────────────
+
+const DEFAULT_SHELL = 'branded';
+
 export default function NewCampaign() {
   const fileInputRef = useRef(null);
 
-  const [subject, setSubject] = useState('');
-  const [replyTo, setReplyTo] = useState('');
-  const [file, setFile] = useState(null);
-  const [dragOver, setDragOver] = useState(false);
-  const [emailHtml, setEmailHtml] = useState('');
-  const [previewTab, setPreviewTab] = useState('editor');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(null);
+  const [shell,       setShell]       = useState(DEFAULT_SHELL);
+  const [subject,     setSubject]     = useState('');
+  const [replyTo,     setReplyTo]     = useState('');
+  const [file,        setFile]        = useState(null);
+  const [dragOver,    setDragOver]    = useState(false);
+  const [emailHtml,   setEmailHtml]   = useState('');
+  const [previewTab,  setPreviewTab]  = useState('editor');
+  const [editorKey,   setEditorKey]   = useState(0); // bump to force-reset the Tiptap editor
+  const [loading,     setLoading]     = useState(false);
+  const [error,       setError]       = useState('');
+  const [success,     setSuccess]     = useState(null);
+
+  function handleCancel() {
+    setShell(DEFAULT_SHELL);
+    setSubject('');
+    setReplyTo('');
+    setFile(null);
+    setDragOver(false);
+    setEmailHtml('');
+    setPreviewTab('editor');
+    setError('');
+    setEditorKey(k => k + 1);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }
 
   function handleFileDrop(e) {
     e.preventDefault();
@@ -42,8 +173,9 @@ export default function NewCampaign() {
     try {
       const formData = new FormData();
       formData.append('recipientsFile', file);
-      formData.append('subject', subject);
-      formData.append('emailContent', emailHtml);
+      formData.append('subject',        subject);
+      formData.append('emailContent',   emailHtml);
+      formData.append('templateShell',  shell);
       if (replyTo) formData.append('replyTo', replyTo);
 
       const data = await api.sendCampaign(formData);
@@ -60,9 +192,15 @@ export default function NewCampaign() {
         <div className="w-14 h-14 rounded-full bg-[#f0faf5] flex items-center justify-center mb-5">
           <CheckCircle size={28} weight="fill" className="text-[#2b9a66]" />
         </div>
-        <h2 className="text-[20px] font-bold tracking-[-0.025em] text-[#202020] mb-2">Campaign started</h2>
+        <h2
+          className="text-[20px] font-bold tracking-[-0.025em] text-[#202020] mb-2"
+          style={{ fontFamily: 'var(--font-display)' }}
+        >
+          Campaign started
+        </h2>
         <p className="text-[13.5px] text-[#646464] mb-7 max-w-[300px] leading-relaxed">
-          Sending to {success.totalRecipients} recipients in the background.
+          Sending to {success.totalRecipients} recipients using the{' '}
+          <span className="font-medium text-[#202020]">{shell}</span> template.
         </p>
         <div className="flex items-center gap-3">
           <Link to={`/campaigns/${success.campaignId}`} className={cn(buttonVariants({ size: 'sm' }))}>
@@ -76,6 +214,13 @@ export default function NewCampaign() {
     );
   }
 
+  const previewHtml = buildPreviewHtml(
+    shell,
+    emailHtml
+      .replace(/\{\{Name\}\}/g,  'Amara Diallo')
+      .replace(/\{\{Email\}\}/g, 'amara@example.com')
+  );
+
   return (
     <div className="max-w-[640px]">
       <Link
@@ -86,9 +231,18 @@ export default function NewCampaign() {
         Back
       </Link>
 
-      <h1 className="text-[22px] font-bold tracking-[-0.025em] text-[#202020] mb-1" style={{ fontFamily: 'var(--font-display)' }}>New campaign</h1>
+      <h1
+        className="text-[22px] font-bold tracking-[-0.025em] text-[#202020] mb-1"
+        style={{ fontFamily: 'var(--font-display)' }}
+      >
+        New campaign
+      </h1>
       <p className="text-[13px] text-[#646464] mb-7 leading-relaxed">
-        Use <span className="font-medium text-[#202020]">Name</span> and <span className="font-medium text-[#202020]">Email</span> tokens in curly braces to personalize each message.
+        Use{' '}
+        <span className="font-mono text-[12px] bg-[#f3f0e8] text-[#8d8d8d] px-1.5 py-0.5 rounded-[4px]">{'{{Name}}'}</span>
+        {' '}and{' '}
+        <span className="font-mono text-[12px] bg-[#f3f0e8] text-[#8d8d8d] px-1.5 py-0.5 rounded-[4px]">{'{{Email}}'}</span>
+        {' '}to personalise each message.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -99,7 +253,35 @@ export default function NewCampaign() {
           </div>
         )}
 
-        {/* Subject */}
+        {/* ── Template shell picker ── */}
+        <div className="space-y-3">
+          <label className="block text-[13px] font-medium text-[#202020]">Email format</label>
+          <div className="grid grid-cols-2 gap-3">
+            {SHELLS.map(({ id, label, description, Thumb }) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setShell(id)}
+                className={cn(
+                  'text-left rounded-[10px] border p-3 transition-all duration-150 space-y-2',
+                  shell === id
+                    ? 'border-[#202020] bg-white shadow-[0_0_0_1px_#202020]'
+                    : 'border-[rgba(32,32,32,0.12)] bg-white hover:border-[rgba(32,32,32,0.28)]'
+                )}
+              >
+                <Thumb />
+                <div>
+                  <div className="text-[12.5px] font-semibold text-[#202020]">{label}</div>
+                  <div className="text-[11.5px] text-[#8d8d8d] leading-snug mt-0.5">{description}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <Separator className="bg-[rgba(32,32,32,0.08)]" />
+
+        {/* ── Subject ── */}
         <div className="space-y-2">
           <label className="block text-[13px] font-medium text-[#202020]">Subject line</label>
           <Input
@@ -109,14 +291,11 @@ export default function NewCampaign() {
             placeholder="Hello {{Name}}, here's what's new"
             required
           />
-          <p className="text-[12px] text-[#8d8d8d]">
-            Supports personalization tokens, e.g. {'{{Name}}'}
-          </p>
         </div>
 
         <Separator className="bg-[rgba(32,32,32,0.08)]" />
 
-        {/* Reply-to */}
+        {/* ── Reply-to ── */}
         <div className="space-y-2">
           <label className="block text-[13px] font-medium text-[#202020]">
             Reply-to <span className="text-[#8d8d8d] font-normal">optional</span>
@@ -131,17 +310,18 @@ export default function NewCampaign() {
 
         <Separator className="bg-[rgba(32,32,32,0.08)]" />
 
-        {/* File drop zone */}
+        {/* ── Recipients file ── */}
         <div className="space-y-2">
           <label className="block text-[13px] font-medium text-[#202020]">Recipients file</label>
           <div
-            className={`relative border-2 border-dashed rounded-[10px] px-6 py-8 text-center cursor-pointer transition-all duration-150 ${
+            className={cn(
+              'relative border-2 border-dashed rounded-[10px] px-6 py-8 text-center cursor-pointer transition-all duration-150',
               dragOver
                 ? 'border-[#ea2804]/40 bg-[#ea2804]/[0.04]'
                 : file
                 ? 'border-[rgba(32,32,32,0.2)] bg-[#f3f0e8]'
                 : 'border-[rgba(32,32,32,0.15)] hover:border-[rgba(32,32,32,0.3)] hover:bg-[#f3f0e8]/60'
-            }`}
+            )}
             onDragOver={e => { e.preventDefault(); setDragOver(true); }}
             onDragLeave={() => setDragOver(false)}
             onDrop={handleFileDrop}
@@ -176,43 +356,45 @@ export default function NewCampaign() {
 
         <Separator className="bg-[rgba(32,32,32,0.08)]" />
 
-        {/* Email editor */}
+        {/* ── Email editor + preview ── */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label className="block text-[13px] font-medium text-[#202020]">Email</label>
+            <label className="block text-[13px] font-medium text-[#202020]">Email body</label>
             <div className="flex items-center gap-1 bg-[#f3f0e8] rounded-full p-0.5">
               {['editor', 'preview'].map(tab => (
                 <button
                   key={tab}
                   type="button"
                   onClick={() => setPreviewTab(tab)}
-                  className={`px-3.5 py-1.5 text-[12px] font-medium rounded-full transition-all duration-100 ${
+                  className={cn(
+                    'px-3.5 py-1.5 text-[12px] font-medium rounded-full transition-all duration-100',
                     previewTab === tab
                       ? 'bg-white text-[#202020] shadow-sm'
                       : 'text-[#8d8d8d] hover:text-[#202020]'
-                  }`}
+                  )}
                 >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  {tab === 'editor' ? 'Write' : 'Preview email'}
                 </button>
               ))}
             </div>
           </div>
 
-          {previewTab === 'editor' ? (
-            <EmailEditor onChange={setEmailHtml} />
-          ) : (
-            <div className="border border-[rgba(32,32,32,0.12)] rounded-[10px] overflow-hidden bg-white min-h-[320px]">
-              {emailHtml && emailHtml !== '<p></p>' ? (
+          {/* Editor stays mounted so Tiptap's internal state survives tab switches — only visibility toggles */}
+          <div className={previewTab === 'editor' ? '' : 'hidden'}>
+            <EmailEditor key={editorKey} onChange={setEmailHtml} />
+          </div>
+
+          {previewTab === 'preview' && (
+            <div className="border border-[rgba(32,32,32,0.12)] rounded-[10px] overflow-hidden bg-[#f5f4f0] min-h-[360px]">
+              {previewHtml ? (
                 <iframe
                   title="Email preview"
-                  srcDoc={emailHtml
-                    .replace(/\{\{Name\}\}/g, 'Jane')
-                    .replace(/\{\{Email\}\}/g, 'jane@example.com')}
+                  srcDoc={previewHtml}
                   sandbox="allow-same-origin"
-                  className="w-full h-[400px] border-none"
+                  className="w-full h-[480px] border-none"
                 />
               ) : (
-                <div className="flex items-center justify-center h-[320px] text-[#8d8d8d] text-[13px]">
+                <div className="flex items-center justify-center h-[360px] text-[#8d8d8d] text-[13px]">
                   Write some content first to see a preview
                 </div>
               )}
@@ -220,15 +402,19 @@ export default function NewCampaign() {
           )}
         </div>
 
-        {/* Actions */}
+        {/* ── Actions ── */}
         <div className="flex items-center gap-3 pt-2">
-          <Button type="submit" disabled={loading}>
+          <Button type="submit" disabled={loading} className="gap-1.5">
             <PaperPlaneTilt size={14} weight="fill" />
             {loading ? 'Starting...' : 'Send campaign'}
           </Button>
-          <Link to="/" className={cn(buttonVariants({ variant: 'ghost' }), 'text-[#646464]')}>
+          <button
+            type="button"
+            onClick={handleCancel}
+            className={cn(buttonVariants({ variant: 'ghost' }), 'text-[#646464]')}
+          >
             Cancel
-          </Link>
+          </button>
         </div>
       </form>
     </div>
