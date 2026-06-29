@@ -1,0 +1,47 @@
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
+  }
+
+  try {
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+    );
+
+    const token = req.headers.get('Authorization')?.replace('Bearer ', '');
+    if (!token) return json({ error: 'Unauthorized' }, 401);
+
+    const { data: { user }, error: authErr } = await supabase.auth.getUser(token);
+    if (authErr || !user) return json({ error: 'Unauthorized' }, 401);
+
+    const { campaignId } = await req.json();
+    if (!campaignId) return json({ error: 'campaignId required' }, 400);
+
+    const [campaignRes, logsRes] = await Promise.all([
+      supabase.from('campaigns').select('*').eq('campaign_id', campaignId).single(),
+      supabase.from('campaign_logs').select('*').eq('campaign_id', campaignId).order('created_at', { ascending: true }),
+    ]);
+
+    if (campaignRes.error) return json({ error: 'Campaign not found' }, 404);
+
+    return json({ campaign: campaignRes.data, logs: logsRes.data ?? [] });
+
+  } catch (err) {
+    return json({ error: (err as Error).message }, 500);
+  }
+});
+
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
+}

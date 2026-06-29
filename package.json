@@ -4,6 +4,10 @@
   "description": "Sendy - Send smarter, not harder. Professional bulk email sender with personalization, inline images, and comprehensive logging",
   "main": "src/index.js",
   "scripts": {
+    "start": "node src/api/server.js",
+    "dev:api": "nodemon src/api/server.js",
+    "dev:ui": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
     "send": "node src/index.js",
     "test": "node src/index.js --dry-run"
   },
@@ -16,7 +20,8 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    
+    "@supabase/supabase-js": "^2.108.2",
+    "@vercel/functions": "^3.7.4",
     "axios": "^1.12.2",
     "cli-progress": "^3.12.0",
     "colors": "^1.4.0",
@@ -25,6 +30,7 @@
     "dotenv": "^16.3.1",
     "express": "^5.1.0",
     "form-data": "^4.0.4",
+    "formidable": "^2.1.5",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.2",
     "node-fetch": "^2.7.0",
