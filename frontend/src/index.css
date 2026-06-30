@@ -114,6 +114,25 @@
   }
 }
 
+/* Custom hand pointer cursor on all interactive elements */
+a, button, [role="button"], [role="tab"], [role="menuitem"], [role="option"],
+[role="checkbox"], [role="switch"], [role="radio"],
+select, summary,
+input[type="submit"], input[type="button"],
+input[type="checkbox"], input[type="radio"], input[type="range"],
+input[type="file"], label[for],
+.cursor-pointer, [data-clickable] {
+  cursor: url('/handpointing.svg') 14 4, pointer;
+}
+
+/* Custom I-beam cursor on text inputs and editable areas */
+input[type="text"], input[type="email"], input[type="password"],
+input[type="search"], input[type="url"], input[type="number"],
+input[type="tel"], textarea, [contenteditable],
+.tiptap-editor .ProseMirror {
+  cursor: url('/textcursor.svg') 13 16, text;
+}
+
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(32,32,32,0.1); border-radius: 99px; }
