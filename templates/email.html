@@ -3,214 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Webinar Invitation</title>
+    <title>Email</title>
     <style>
-        /* Email-safe CSS */
         body {
             margin: 0;
             padding: 0;
+            background-color: #ffffff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f4f4;
+            -webkit-text-size-adjust: 100%;
         }
+
+        .email-wrapper {
+            width: 100%;
+            background-color: #f5f5f5;
+            padding: 24px 0;
+        }
+
         .email-container {
-            max-width: 600px;
+            max-width: 640px;
             margin: 0 auto;
             background-color: #ffffff;
-            border-radius: 8px;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
+
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 40px 20px;
+            padding: 36px 24px;
             text-align: center;
             color: #ffffff;
         }
+
         .header h1 {
             margin: 0;
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 600;
+            line-height: 1.3;
         }
+
         .content {
-            padding: 40px 30px;
+            padding: 36px 24px;
             color: #333333;
-            line-height: 1.6;
+            line-height: 1.7;
+            font-size: 16px;
         }
+
         .greeting {
             font-size: 20px;
             font-weight: 600;
             color: #667eea;
             margin-bottom: 20px;
         }
+
         .body-text {
             font-size: 16px;
             margin-bottom: 20px;
         }
+
         .image-container {
             text-align: center;
-            margin: 30px 0;
+            margin: 24px 0;
         }
+
         .image-container img {
             max-width: 100%;
+            width: 100%;
             height: auto;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: block;
         }
+
         .cta-button {
             display: inline-block;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #ffffff;
-            padding: 15px 40px;
+            padding: 14px 36px;
             text-decoration: none;
             border-radius: 5px;
             font-size: 16px;
             font-weight: 600;
             margin: 20px 0;
-            transition: transform 0.2s;
         }
-        .cta-button:hover {
-            transform: translateY(-2px);
-        }
+
         .highlight-box {
             background-color: #f8f9ff;
-            border-left: 4px solid #667eea;
-            padding: 20px;
-            margin: 25px 0;
-            border-radius: 4px;
+            border-left: 3px solid #667eea;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
         }
+
         .highlight-box h3 {
-            margin-top: 0;
+            margin: 0 0 10px 0;
             color: #667eea;
-            font-size: 18px;
+            font-size: 17px;
         }
+
         .highlight-box ul {
-            margin: 10px 0;
-            padding-left: 20px;
+            margin: 0;
+            padding-left: 18px;
         }
+
         .highlight-box li {
-            margin: 8px 0;
+            margin: 6px 0;
         }
+
+        .divider {
+            height: 1px;
+            background-color: #ebebeb;
+            margin: 28px 0;
+        }
+
         .footer {
             background-color: #f8f9fa;
-            padding: 30px;
+            padding: 24px;
             text-align: center;
-            color: #666666;
-            font-size: 14px;
+            color: #888888;
+            font-size: 13px;
+            line-height: 1.6;
+            border-top: 1px solid #ebebeb;
         }
+
         .footer a {
             color: #667eea;
             text-decoration: none;
         }
+
         .social-links {
-            margin: 20px 0;
+            margin: 0 0 16px 0;
         }
+
         .social-links a {
             display: inline-block;
-            margin: 0 10px;
+            margin: 0 8px;
             color: #667eea;
             text-decoration: none;
         }
-        .divider {
-            height: 1px;
-            background-color: #e0e0e0;
-            margin: 30px 0;
+
+        @media only screen and (max-width: 480px) {
+            .content {
+                padding: 28px 16px;
+            }
+            .header {
+                padding: 28px 16px;
+            }
+            .header h1 {
+                font-size: 22px;
+            }
+            .footer {
+                padding: 20px 16px;
+            }
+            .highlight-box {
+                padding: 14px 16px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="email-container">
-        <!-- Header -->
-        <div class="header">
-            <h1>🎯 Huawei ICT Competition 2025–2026</h1>
-        </div>
+    <div class="email-wrapper">
+        <div class="email-container">
 
-        <!-- Main Content -->
-        <div class="content">
-            <!-- Personalized Greeting -->
-            <div class="greeting">
-                Hello {{Name}}! 👋
+            <!-- Header -->
+            <div class="header">
+                <h1>🎯 Huawei ICT Competition 2025–2026</h1>
             </div>
 
-            <!-- Body Text -->
-            <div class="body-text">
-                This is a friendly reminder that the <strong>Huawei ICT Competition 2025–2026 Tanzania Webinar</strong> is happening today, <strong>21st October 2025, at 7:00 PM (EAT)</strong>, and you won't want to miss it!
+            <!-- Main Content -->
+            <div class="content">
+
+                <div class="greeting">Hello {{Name}}! 👋</div>
+
+                <div class="body-text">
+                    This is a friendly reminder that the <strong>Huawei ICT Competition 2025–2026 Tanzania Webinar</strong> is happening today, <strong>21st October 2025, at 7:00 PM (EAT)</strong>, and you won't want to miss it!
+                </div>
+
+                <!-- Inline Image -->
+                <div class="image-container">
+                    <img src="cid:inline-image" alt="Huawei ICT Competition Webinar Poster" />
+                </div>
+
+                <div class="body-text"><strong>During this exciting session, you'll:</strong></div>
+
+                <div class="highlight-box">
+                    <ul>
+                        <li>✅ Learn what the Huawei ICT Competition is all about</li>
+                        <li>✅ Discover why you should take part</li>
+                        <li>✅ Understand how to register and prepare for success</li>
+                    </ul>
+                </div>
+
+                <div class="body-text">
+                    Your registration shows your passion for growth and innovation. <strong>Congratulations on taking the first step</strong> toward doing well in the competition and building your ICT future!
+                </div>
+
+                <div class="highlight-box">
+                    <h3>📅 Event Details</h3>
+                    <ul>
+                        <li><strong>Date:</strong> Tuesday, 21st October 2025</li>
+                        <li><strong>Time:</strong> 7:00 PM (EAT)</li>
+                        <li><strong>Platform:</strong> Google Meet</li>
+                        <li><strong>Join Link:</strong> <a href="https://meet.google.com/vbc-rtzs-bpf" style="color: #667eea;">https://meet.google.com/vbc-rtzs-bpf</a></li>
+                    </ul>
+                </div>
+
+                <div style="text-align: center; margin: 28px 0;">
+                    <a href="https://meet.google.com/vbc-rtzs-bpf" class="cta-button">Join the Webinar Now 🚀</a>
+                </div>
+
+                <div class="body-text">
+                    Make sure to join on time so you don't miss out on valuable insights and guidance from Huawei experts.
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="body-text">
+                    <strong>See you this evening!</strong><br>
+                    Let's connect, learn, and unlock the future together.
+                </div>
+
+                <div class="body-text">
+                    Warm regards,<br>
+                    <strong>Huawei ICT Academy</strong><br>
+                    🌐 <em>I.C. The Future</em>
+                </div>
+
             </div>
 
-            <!-- Inline Image -->
-            <div class="image-container">
-                <img src="cid:inline-image" alt="Huawei ICT Competition Webinar Poster" />
+            <!-- Footer -->
+            <div class="footer">
+                <div class="social-links">
+                    <a href="https://twitter.com/huawei">Twitter</a> |
+                    <a href="https://linkedin.com/company/huawei">LinkedIn</a> |
+                    <a href="https://facebook.com/huawei">Facebook</a>
+                </div>
+                <p style="margin: 0 0 8px 0;">
+                    © {{Year}} Huawei ICT Academy Tanzania. All rights reserved.<br>
+                    Empowering the next generation of ICT professionals
+                </p>
+                <p style="margin: 0; font-size: 12px; color: #aaaaaa;">
+                    You're receiving this email because you registered for the Huawei ICT Competition 2025–2026.<br>
+                    For questions, contact us at: <a href="mailto:ict.academy@huawei.com">ict.academy@huawei.com</a>
+                </p>
             </div>
 
-            <!-- What You'll Learn -->
-            <div class="body-text">
-                <strong>During this exciting session, you'll:</strong>
-            </div>
-            <div class="highlight-box">
-                <ul>
-                    <li>✅ Learn what the Huawei ICT Competition is all about</li>
-                    <li>✅ Discover why you should take part</li>
-                    <li>✅ Understand how to register and prepare for success</li>
-                </ul>
-            </div>
-
-            <div class="body-text">
-                Your registration shows your passion for growth and innovation. <strong>Congratulations on taking the first step</strong> toward doing well in the competition and building your ICT future!
-            </div>
-
-            <!-- Highlight Box with Details -->
-            <div class="highlight-box">
-                <h3>📅 Event Details</h3>
-                <ul>
-                    <li><strong>Date:</strong> Tuesday, 21st October 2025</li>
-                    <li><strong>Time:</strong> 7:00 PM (EAT)</li>
-                    <li><strong>Platform:</strong> Google Meet</li>
-                    <li><strong>Join Link:</strong> <a href="https://meet.google.com/vbc-rtzs-bpf" style="color: #667eea;">https://meet.google.com/vbc-rtzs-bpf</a></li>
-                </ul>
-            </div>
-
-            <!-- Call to Action -->
-            <div style="text-align: center; margin: 30px 0;">
-                <a href="https://meet.google.com/vbc-rtzs-bpf" class="cta-button">
-                    Join the Webinar Now 🚀
-                </a>
-            </div>
-
-            <div class="body-text">
-                Make sure to join on time so you don't miss out on valuable insights and guidance from Huawei experts.
-            </div>
-
-            <div class="divider"></div>
-
-            <!-- Closing -->
-            <div class="body-text">
-                <strong>See you this evening!</strong><br>
-                Let's connect, learn, and unlock the future together.
-            </div>
-
-            <div class="body-text">
-                Warm regards,<br>
-                <strong>Huawei ICT Academy</strong><br>
-                🌐 <em>I.C. The Future</em>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="footer">
-            <div class="social-links">
-                <a href="https://twitter.com/huawei">Twitter</a> |
-                <a href="https://linkedin.com/company/huawei">LinkedIn</a> |
-                <a href="https://facebook.com/huawei">Facebook</a>
-            </div>
-            
-            <p>
-                © {{Year}} Huawei ICT Academy Tanzania. All rights reserved.<br>
-                Empowering the next generation of ICT professionals
-            </p>
-
-            <p style="font-size: 12px; color: #999;">
-                You're receiving this email because you registered for the Huawei ICT Competition 2025–2026.<br>
-                For questions, contact us at: <a href="mailto:ict.academy@huawei.com">ict.academy@huawei.com</a>
-            </p>
         </div>
     </div>
 </body>
