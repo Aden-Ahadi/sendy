@@ -4,6 +4,7 @@ import { PaperPlaneTilt } from '@phosphor-icons/react';
 import { supabase } from './lib/supabase';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
+import { DesktopGate } from './components/DesktopGate';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import NewCampaign from './pages/NewCampaign';
@@ -47,7 +48,9 @@ export default function App() {
         <Route
           element={
             <ProtectedRoute session={session}>
-              <Layout session={session} />
+              <DesktopGate>
+                <Layout session={session} />
+              </DesktopGate>
             </ProtectedRoute>
           }
         >
