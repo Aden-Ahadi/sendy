@@ -1,18 +1,31 @@
 import { useState, useEffect } from 'react';
 
 export function useTheme() {
-  const [theme, setTheme] = useState(
-    () => localStorage.getItem('theme') || 'light'
+  const [isDark, setIsDark] = useState(
+    () => localStorage.getItem('theme') === 'dark'
   );
 
   useEffect(() => {
-    const root = document.documentElement;
-    root.classList.toggle('dark', theme === 'dark');
-    localStorage.setItem('theme', theme);
-  }, [theme]);
+    // Sync with whatever the DOM currently says (ThemeToggle may have already applied it)
+    setIsDark(document.documentElement.classList.contains('dark'));
 
-  return {
-    isDark: theme === 'dark',
-    toggle: () => setTheme(t => (t === 'dark' ? 'light' : 'dark')),
+    // Watch for class changes so all consumers re-render when the toggle fires
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  const toggle = () => {
+    const next = !isDark;
+    document.documentElement.classList.toggle('dark', next);
+    localStorage.setItem('theme', next ? 'dark' : 'light');
+    // No setIsDark needed — MutationObserver fires and updates all consumers
   };
+
+  return { isDark, toggle };
 }

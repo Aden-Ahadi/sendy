@@ -1,17 +1,15 @@
 import { cn } from '@/lib/utils';
+import { useTheme } from '../lib/useTheme';
 
-// 90 bars → each is ~6px wide on a typical card, matching the uptime-chart aesthetic
 const NUM_BARS = 90;
 
-// `background` values, not `backgroundColor`, so gradients work inline
 const STYLES = {
-  sent:    { background: 'linear-gradient(to top, #6ee7b7, #d1fae5)' },
-  failed:  { background: '#fca5a5' },
-  mixed:   { background: '#fde68a' },
-  pending: { background: 'rgba(32, 32, 32, 0.07)' },
+  sent:   { background: 'linear-gradient(to top, #6ee7b7, #d1fae5)' },
+  failed: { background: '#fca5a5' },
+  mixed:  { background: '#fde68a' },
 };
 
-function buildBars({ total, sent, failed, logs, status }) {
+function buildBars({ total, sent, failed, logs, status, pendingStyle }) {
   if (logs && logs.length > 0) {
     const sorted = [...logs].sort(
       (a, b) => new Date(a.created_at) - new Date(b.created_at)
@@ -21,7 +19,7 @@ function buildBars({ total, sent, failed, logs, status }) {
       const end   = Math.floor(((i + 1) / NUM_BARS) * total);
       const chunk = sorted.slice(start, end);
       if (chunk.length === 0) {
-        return { style: STYLES.pending, label: status === 'sending' ? 'Pending' : 'Not reached' };
+        return { style: pendingStyle, label: status === 'sending' ? 'Pending' : 'Not reached' };
       }
       const ok   = chunk.filter(l => l.status === 'success').length;
       const bad  = chunk.length - ok;
@@ -32,19 +30,24 @@ function buildBars({ total, sent, failed, logs, status }) {
     });
   }
 
-  // Aggregate: green → red → pending, left to right
   const sentBars   = Math.round((sent   / total) * NUM_BARS);
   const failedBars = Math.round((failed / total) * NUM_BARS);
   return Array.from({ length: NUM_BARS }).map((_, i) => {
     if (i < sentBars)              return { style: STYLES.sent,    label: 'Delivered' };
     if (i < sentBars + failedBars) return { style: STYLES.failed,  label: 'Failed' };
-    return { style: STYLES.pending, label: status === 'sending' ? 'Pending' : 'Not sent' };
+    return { style: pendingStyle, label: status === 'sending' ? 'Pending' : 'Not sent' };
   });
 }
 
 export function DeliveryBars({ total, sent, failed, logs, status, className }) {
+  const { isDark } = useTheme();
   if (!total) return null;
-  const bars = buildBars({ total, sent, failed, logs, status });
+
+  const pendingStyle = {
+    background: isDark ? 'rgba(255, 250, 240, 0.10)' : 'rgba(32, 32, 32, 0.07)',
+  };
+
+  const bars = buildBars({ total, sent, failed, logs, status, pendingStyle });
 
   return (
     <div className={cn('flex items-end gap-[2px]', className)}>
@@ -61,16 +64,20 @@ export function DeliveryBars({ total, sent, failed, logs, status, className }) {
 }
 
 export function DeliveryLegend({ sent, failed, total }) {
+  const { isDark } = useTheme();
   const pending = total - sent - failed;
+  const pendingBg = isDark ? 'rgba(255,250,240,0.15)' : 'rgba(32,32,32,0.18)';
+
   const items = [
     { bg: 'linear-gradient(to top, #6ee7b7, #d1fae5)', label: `${sent.toLocaleString()} delivered` },
-    ...(failed  > 0 ? [{ bg: '#fca5a5',                label: `${failed.toLocaleString()} failed` }]   : []),
-    ...(pending > 0 ? [{ bg: 'rgba(32,32,32,0.18)',    label: `${pending.toLocaleString()} pending` }] : []),
+    ...(failed  > 0 ? [{ bg: '#fca5a5',   label: `${failed.toLocaleString()} failed` }]   : []),
+    ...(pending > 0 ? [{ bg: pendingBg,   label: `${pending.toLocaleString()} pending` }] : []),
   ];
+
   return (
     <div className="flex items-center gap-4 mt-2">
       {items.map(item => (
-        <span key={item.label} className="inline-flex items-center gap-1.5 text-[11px] text-[#8d8d8d]">
+        <span key={item.label} className="inline-flex items-center gap-1.5 text-[11px] text-[#8d8d8d] dark:text-[#625e59]">
           <span
             className="w-[6px] h-[6px] rounded-[1px] inline-block flex-shrink-0"
             style={{ background: item.bg }}

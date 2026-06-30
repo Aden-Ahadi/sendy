@@ -90,8 +90,8 @@ function shellBranded(body: string): string {
   const logoUrl = Deno.env.get('BRAND_LOGO_URL') ?? null;
 
   const headerContent = logoUrl
-    ? `<img src="${logoUrl}" width="110" height="auto" alt="${BRAND_NAME}" style="display:block;margin:0 auto;max-width:110px;border:0;">`
-    : `<span style="font-size:17px;font-weight:700;color:#111111;letter-spacing:-0.3px;">${BRAND_NAME}</span>`;
+    ? `<img src="${logoUrl}" width="600" alt="${BRAND_NAME}" style="display:block;width:100%;height:auto;border:0;border-radius:8px 8px 0 0;">`
+    : `<div style="padding:24px 32px;text-align:center;"><span style="font-size:17px;font-weight:700;color:#111111;letter-spacing:-0.3px;">${BRAND_NAME}</span></div>`;
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -99,21 +99,40 @@ function shellBranded(body: string): string {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <!--[if mso]><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->
+<style>
+  /* Dark mode — logo image carries its own background so no override needed there */
+  u + .body .body-cell   { background-color: #1c1b19 !important; color: #edeae4 !important; }
+  u + .body .footer-cell { background-color: #141412 !important; color: #8a8680 !important; }
+  u + .body .outer-td    { background-color: #0f0e0c !important; }
+
+  @media (prefers-color-scheme: dark) {
+    .outer-td    { background-color: #0f0e0c !important; }
+    .body-cell   { background-color: #1c1b19 !important; color: #edeae4 !important; }
+    .footer-cell { background-color: #141412 !important; color: #8a8680 !important; border-top-color: #2a2825 !important; }
+  }
+
+  @media only screen and (max-width: 620px) {
+    .outer-td    { padding: 0 !important; }
+    .logo-cell   { padding: 20px 20px !important; border-radius: 0 !important; }
+    .body-cell   { padding: 28px 20px !important; }
+    .footer-cell { padding: 16px 20px !important; border-radius: 0 !important; }
+  }
+</style>
 </head>
-<body style="margin:0;padding:0;background-color:#f5f4f0;-webkit-text-size-adjust:100%;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;">
+<body class="body" style="margin:0;padding:0;background-color:#f5f4f0;-webkit-text-size-adjust:100%;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f4f0;">
-<tr><td align="center" style="padding:40px 20px;">
-<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;">
-  <!-- Logo header -->
-  <tr><td style="background-color:#ffffff;border-radius:8px 8px 0 0;padding:28px 48px;text-align:center;border-bottom:1px solid #eaeaea;">
+<tr><td class="outer-td" align="center" style="padding:32px 16px;">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;">
+  <!-- Logo header — full-width banner, image carries its own background -->
+  <tr><td class="logo-cell" style="padding:0;line-height:0;font-size:0;border-bottom:1px solid #eaeaea;overflow:hidden;border-radius:8px 8px 0 0;">
     ${headerContent}
   </td></tr>
   <!-- Body -->
-  <tr><td style="background-color:#ffffff;padding:40px 48px;font-size:15px;line-height:1.7;color:#202020;">
+  <tr><td class="body-cell" bgcolor="#ffffff" style="background-color:#ffffff !important;padding:32px 32px;font-size:15px;line-height:1.75;color:#202020 !important;">
     ${body}
   </td></tr>
   <!-- Footer -->
-  <tr><td style="background-color:#f9f8f5;border-radius:0 0 8px 8px;padding:20px 48px;border-top:1px solid #eaeaea;text-align:center;font-size:12px;color:#999999;line-height:1.8;">
+  <tr><td class="footer-cell" bgcolor="#f9f8f5" style="background-color:#f9f8f5 !important;border-radius:0 0 8px 8px;padding:18px 32px;border-top:1px solid #eaeaea;text-align:center;font-size:12px;color:#999999;line-height:1.8;">
     ${BRAND_FOOTER}
   </td></tr>
 </table>

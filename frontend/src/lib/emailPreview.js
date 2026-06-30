@@ -1,5 +1,5 @@
 // Mirrors the backend shell HTML (supabase/functions/campaigns-send/index.ts) but uses
-// the relative /brand-logo.png path, which only resolves correctly in-browser.
+// the relative /brand_logo.jpg path, which only resolves correctly in-browser.
 export const BRAND_NAME   = 'Huawei ICT Academy - DIT';
 export const BRAND_FOOTER = 'Huawei DIT ICT Academy &nbsp;&middot;&nbsp; P.O.Box 2958 Dar-es-salaam';
 
@@ -30,13 +30,13 @@ export function buildPreviewHtml(shell, content) {
     return `<!DOCTYPE html><html><head><meta charset="UTF-8">${BASE_STYLES}</head>
 <body>
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f5f4f0;">
-<tr><td align="center" style="padding:40px 20px;">
-<table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;">
-  <tr><td style="background:#fff;border-radius:8px 8px 0 0;padding:28px 48px;text-align:center;border-bottom:1px solid #eaeaea;">
-    <img src="/brand-logo.png" width="110" height="auto" alt="${BRAND_NAME}" style="display:block;margin:0 auto;max-width:110px;">
+<tr><td align="center" style="padding:32px 16px;">
+<table cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;">
+  <tr><td style="border-radius:8px 8px 0 0;border-bottom:1px solid #eaeaea;padding:0;line-height:0;font-size:0;overflow:hidden;">
+    <img src="/brand_logo.jpg" width="600" alt="${BRAND_NAME}" style="display:block;width:100%;height:auto;border-radius:8px 8px 0 0;">
   </td></tr>
-  <tr><td style="background:#fff;padding:40px 48px;">${content}</td></tr>
-  <tr><td style="background:#f9f8f5;border-radius:0 0 8px 8px;padding:20px 48px;border-top:1px solid #eaeaea;text-align:center;font-size:12px;color:#999;line-height:1.8;">
+  <tr><td class="body-cell" style="background:#fff;padding:32px 32px;">${content}</td></tr>
+  <tr><td style="background:#f9f8f5;border-radius:0 0 8px 8px;padding:18px 32px;border-top:1px solid #eaeaea;text-align:center;font-size:12px;color:#999;line-height:1.8;">
     ${BRAND_FOOTER}
   </td></tr>
 </table>
@@ -49,10 +49,10 @@ export function buildPreviewHtml(shell, content) {
   return `<!DOCTYPE html><html><head><meta charset="UTF-8">${BASE_STYLES}</head>
 <body>
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f5f4f0;">
-<tr><td align="center" style="padding:40px 20px;">
-<table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;">
-  <tr><td style="background:#fff;border-radius:8px;padding:48px;">${content}</td></tr>
-  <tr><td style="padding:24px 0;text-align:center;font-size:12px;color:#999;line-height:1.8;">
+<tr><td align="center" style="padding:32px 16px;">
+<table cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;">
+  <tr><td style="background:#fff;border-radius:8px;padding:32px;">${content}</td></tr>
+  <tr><td style="padding:20px 0;text-align:center;font-size:12px;color:#999;line-height:1.8;">
     ${BRAND_FOOTER}
   </td></tr>
 </table>
