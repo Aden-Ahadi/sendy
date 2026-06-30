@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { ChartBar, PaperPlaneTilt, SignOut, CaretDoubleLeft, CaretDoubleRight } from '@phosphor-icons/react';
+import { PaperPlaneTilt, SignOut, CaretDoubleLeft, CaretDoubleRight } from '@phosphor-icons/react';
 import { supabase } from '../lib/supabase';
+import { ThemeToggle } from './ThemeToggle';
+import { EnvelopeIcon, UserBadgeIcon, BroadcastIcon } from './icons';
+import { useLenis } from '../lib/useLenis';
 
 function NavItem({ to, end, icon: Icon, label, collapsed }) {
   return (
@@ -9,23 +12,21 @@ function NavItem({ to, end, icon: Icon, label, collapsed }) {
       to={to}
       end={end}
       className={({ isActive }) =>
-        `relative group flex items-center py-2 rounded-lg text-[13px] font-medium transition-all duration-150 ${
+        `relative group flex items-center py-2 rounded-lg text-[15px] font-medium transition-all duration-150 ${
           collapsed ? 'justify-center px-0 w-10 mx-auto' : 'gap-2.5 px-3'
         } ${
           isActive
             ? 'bg-[#ea2804]/[0.14] text-white'
-            : 'text-[rgba(252,252,252,0.45)] hover:bg-white/[0.07] hover:text-white'
+            : 'text-[rgba(252,252,252,0.60)] hover:bg-white/[0.07] hover:text-white'
         }`
       }
     >
-      <Icon size={15} weight="fill" className="flex-shrink-0" />
+      <Icon className="w-5 h-5 flex-shrink-0" />
 
-      {/* Label — visible when expanded */}
       {!collapsed && <span>{label}</span>}
 
-      {/* Tooltip — visible on hover when collapsed */}
       {collapsed && (
-        <span className="pointer-events-none absolute left-[calc(100%+10px)] top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-lg bg-[#202020] border border-white/10 px-2.5 py-1.5 text-[12px] font-medium text-white shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+        <span className="pointer-events-none absolute left-[calc(100%+10px)] top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-lg bg-[#202020] border border-white/10 px-2.5 py-1.5 text-[14px] font-medium text-white shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-150">
           {label}
         </span>
       )}
@@ -37,22 +38,23 @@ export default function Layout({ session }) {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
 
+  useLenis();
+
   async function handleSignOut() {
     await supabase.auth.signOut();
     navigate('/login');
   }
 
   const email = session?.user?.email || '';
-  const initial = email.charAt(0).toUpperCase();
+  const sidebarWidth = collapsed ? 56 : 220;
 
   return (
-    /* Outer div: no overflow-hidden so sidebar tooltips can bleed right */
-    <div className="flex h-screen bg-[#f9f7f3]">
+    <div className="bg-[#f9f7f3] dark:bg-[#141412] transition-colors duration-200">
 
-      {/* Sidebar */}
+      {/* Sidebar — fixed so body can scroll freely */}
       <aside
-        className="flex-shrink-0 flex flex-col bg-[#202020] select-none transition-[width] duration-200 ease-in-out overflow-visible"
-        style={{ width: collapsed ? 56 : 220 }}
+        className="fixed top-0 left-0 bottom-0 z-30 flex flex-col bg-[#202020] dark:bg-[#0f0e0c] select-none transition-[width,background-color] duration-200 ease-in-out overflow-visible"
+        style={{ width: sidebarWidth }}
       >
         {/* Brand */}
         <div className={`flex items-center h-[60px] border-b border-white/[0.07] ${collapsed ? 'justify-center px-0' : 'gap-2.5 px-5'}`}>
@@ -64,20 +66,18 @@ export default function Layout({ session }) {
 
         {/* Nav */}
         <nav className={`flex-1 py-3 ${collapsed ? 'px-0 flex flex-col items-center gap-0.5' : 'px-3 space-y-0.5'}`}>
-          <NavItem to="/" end icon={ChartBar} label="Campaigns" collapsed={collapsed} />
-          <NavItem to="/campaigns/new" icon={PaperPlaneTilt} label="New campaign" collapsed={collapsed} />
+          <NavItem to="/" end icon={EnvelopeIcon} label="Campaigns" collapsed={collapsed} />
+          <NavItem to="/campaigns/new" icon={BroadcastIcon} label="New campaign" collapsed={collapsed} />
         </nav>
 
-        {/* Collapse toggle */}
-        <div className={`py-2 border-t border-white/[0.07] flex ${collapsed ? 'justify-center' : 'px-4 justify-end'}`}>
+        {/* Collapse button */}
+        <div className={`py-2 border-t border-white/[0.07] flex items-center ${collapsed ? 'justify-center' : 'px-4 justify-end'}`}>
           <button
             onClick={() => setCollapsed(c => !c)}
             title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            className="p-1.5 rounded-md text-[rgba(252,252,252,0.3)] hover:text-white hover:bg-white/[0.07] transition-all duration-150"
+            className="p-1.5 rounded-md text-[rgba(252,252,252,0.50)] hover:text-white hover:bg-white/[0.07] transition-all duration-150"
           >
-            {collapsed
-              ? <CaretDoubleRight size={13} />
-              : <CaretDoubleLeft size={13} />}
+            {collapsed ? <CaretDoubleRight size={13} /> : <CaretDoubleLeft size={13} />}
           </button>
         </div>
 
@@ -85,23 +85,22 @@ export default function Layout({ session }) {
         <div className={`py-3 border-t border-white/[0.07] ${collapsed ? 'px-0 flex flex-col items-center gap-2' : 'px-3'}`}>
           {collapsed ? (
             <div className="relative group">
-              <div className="w-7 h-7 rounded-full bg-[#ea2804] flex items-center justify-center text-[11px] font-bold text-white cursor-default">
-                {initial}
+              <div className="w-7 h-7 rounded-full bg-white/[0.08] border border-white/[0.12] flex items-center justify-center cursor-default">
+                <UserBadgeIcon className="w-[17px] h-[17px] text-[rgba(252,252,252,0.75)]" />
               </div>
-              {/* Tooltip for avatar when collapsed */}
-              <span className="pointer-events-none absolute left-[calc(100%+10px)] top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-lg bg-[#202020] border border-white/10 px-2.5 py-1.5 text-[12px] text-white shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+              <span className="pointer-events-none absolute left-[calc(100%+10px)] top-1/2 -translate-y-1/2 z-50 whitespace-nowrap rounded-lg bg-[#202020] border border-white/10 px-2.5 py-1.5 text-[14px] text-white shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-150">
                 {email}
               </span>
             </div>
           ) : (
             <div className="flex items-center gap-2.5 px-3 py-2">
-              <div className="w-7 h-7 rounded-full bg-[#ea2804] flex items-center justify-center text-[11px] font-bold text-white flex-shrink-0">
-                {initial}
+              <div className="w-7 h-7 rounded-full bg-white/[0.08] border border-white/[0.12] flex items-center justify-center flex-shrink-0">
+                <UserBadgeIcon className="w-[17px] h-[17px] text-[rgba(252,252,252,0.75)]" />
               </div>
-              <span className="text-[rgba(252,252,252,0.4)] text-[11.5px] truncate flex-1">{email}</span>
+              <span className="text-[rgba(252,252,252,0.55)] text-[13px] truncate flex-1">{email}</span>
               <button
                 onClick={handleSignOut}
-                className="text-[rgba(252,252,252,0.3)] hover:text-white transition-colors duration-150 p-1 rounded"
+                className="text-[rgba(252,252,252,0.50)] hover:text-white transition-colors duration-150 p-1 rounded"
                 title="Sign out"
               >
                 <SignOut size={14} />
@@ -111,12 +110,17 @@ export default function Layout({ session }) {
         </div>
       </aside>
 
-      {/* Main */}
-      <main className="flex-1 overflow-y-auto">
+      {/* Main — offset by sidebar, lets the body scroll (Lenis target) */}
+      <main
+        className="min-h-screen transition-[margin-left] duration-200 ease-in-out"
+        style={{ marginLeft: sidebarWidth }}
+      >
         <div className="max-w-[860px] mx-auto px-8 py-8">
           <Outlet />
         </div>
       </main>
+
+      <ThemeToggle className="top-8 right-8" />
     </div>
   );
 }

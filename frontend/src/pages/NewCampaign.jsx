@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, PaperPlaneTilt, UploadSimple, File, Warning, CheckCircle } from '@phosphor-icons/react';
+import { BroadcastIcon } from '../components/icons';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
@@ -9,16 +10,14 @@ import EmailEditor from '../components/EmailEditor';
 import { api } from '../lib/api';
 import { buildPreviewHtml } from '../lib/emailPreview';
 
-// ── Shell picker thumbnails ────────────────────────────────────────────────
-
 function MinimalThumb() {
   return (
-    <div className="w-full h-[72px] rounded-[5px] bg-[#f0ede7] overflow-hidden flex items-center justify-center p-2">
-      <div className="w-full h-full bg-white rounded-[4px] px-3 py-2.5 flex flex-col gap-1.5">
-        <div className="h-2 w-2/5 bg-[#d4d0ca] rounded-[2px]" />
-        <div className="h-1.5 w-full bg-[#e8e5de] rounded-[2px]" />
-        <div className="h-1.5 w-4/5 bg-[#e8e5de] rounded-[2px]" />
-        <div className="h-1.5 w-full bg-[#e8e5de] rounded-[2px]" />
+    <div className="w-full h-[72px] rounded-[5px] bg-[#f0ede7] dark:bg-[#1e1d1b] overflow-hidden flex items-center justify-center p-2">
+      <div className="w-full h-full bg-white dark:bg-[#252320] rounded-[4px] px-3 py-2.5 flex flex-col gap-1.5">
+        <div className="h-2 w-2/5 bg-[#d4d0ca] dark:bg-[#3a3835] rounded-[2px]" />
+        <div className="h-1.5 w-full bg-[#e8e5de] dark:bg-[#2e2c29] rounded-[2px]" />
+        <div className="h-1.5 w-4/5 bg-[#e8e5de] dark:bg-[#2e2c29] rounded-[2px]" />
+        <div className="h-1.5 w-full bg-[#e8e5de] dark:bg-[#2e2c29] rounded-[2px]" />
       </div>
     </div>
   );
@@ -26,19 +25,16 @@ function MinimalThumb() {
 
 function BrandedThumb() {
   return (
-    <div className="w-full h-[72px] rounded-[5px] bg-[#f0ede7] overflow-hidden flex flex-col">
-      {/* Logo bar */}
-      <div className="bg-white border-b border-[#eaeaea] h-[22px] flex items-center justify-center flex-shrink-0">
-        <div className="w-7 h-3 bg-[#ccc] rounded-[2px]" />
+    <div className="w-full h-[72px] rounded-[5px] bg-[#f0ede7] dark:bg-[#1e1d1b] overflow-hidden flex flex-col">
+      <div className="bg-white dark:bg-[#252320] border-b border-[#eaeaea] dark:border-[rgba(255,250,240,0.07)] h-[22px] flex items-center justify-center flex-shrink-0">
+        <div className="w-7 h-3 bg-[#ccc] dark:bg-[#3a3835] rounded-[2px]" />
       </div>
-      {/* Body */}
-      <div className="flex-1 bg-white px-3 py-2 flex flex-col gap-1.5">
-        <div className="h-1.5 w-2/5 bg-[#d4d0ca] rounded-[2px]" />
-        <div className="h-1.5 w-full bg-[#e8e5de] rounded-[2px]" />
-        <div className="h-1.5 w-3/4 bg-[#e8e5de] rounded-[2px]" />
+      <div className="flex-1 bg-white dark:bg-[#252320] px-3 py-2 flex flex-col gap-1.5">
+        <div className="h-1.5 w-2/5 bg-[#d4d0ca] dark:bg-[#3a3835] rounded-[2px]" />
+        <div className="h-1.5 w-full bg-[#e8e5de] dark:bg-[#2e2c29] rounded-[2px]" />
+        <div className="h-1.5 w-3/4 bg-[#e8e5de] dark:bg-[#2e2c29] rounded-[2px]" />
       </div>
-      {/* Footer */}
-      <div className="bg-[#f5f4f0] h-[12px] border-t border-[#eaeaea]" />
+      <div className="bg-[#f5f4f0] dark:bg-[#1a1917] h-[12px] border-t border-[#eaeaea] dark:border-[rgba(255,250,240,0.07)]" />
     </div>
   );
 }
@@ -58,8 +54,6 @@ const SHELLS = [
   },
 ];
 
-// ── Page ──────────────────────────────────────────────────────────────────
-
 const DEFAULT_SHELL = 'branded';
 
 export default function NewCampaign() {
@@ -72,7 +66,7 @@ export default function NewCampaign() {
   const [dragOver,    setDragOver]    = useState(false);
   const [emailHtml,   setEmailHtml]   = useState('');
   const [previewTab,  setPreviewTab]  = useState('editor');
-  const [editorKey,   setEditorKey]   = useState(0); // bump to force-reset the Tiptap editor
+  const [editorKey,   setEditorKey]   = useState(0);
   const [loading,     setLoading]     = useState(false);
   const [error,       setError]       = useState('');
   const [success,     setSuccess]     = useState(null);
@@ -127,18 +121,18 @@ export default function NewCampaign() {
   if (success) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="w-14 h-14 rounded-full bg-[#f0faf5] flex items-center justify-center mb-5">
-          <CheckCircle size={28} weight="fill" className="text-[#2b9a66]" />
+        <div className="w-14 h-14 rounded-full bg-[#EDF3EC] dark:bg-[#1a2e1c] flex items-center justify-center mb-5">
+          <CheckCircle size={28} weight="fill" className="text-[#346538]" />
         </div>
         <h2
-          className="text-[20px] font-bold tracking-[-0.025em] text-[#202020] mb-2"
+          className="text-[20px] font-bold tracking-[-0.025em] text-[#202020] dark:text-[#edeae4] mb-2"
           style={{ fontFamily: 'var(--font-display)' }}
         >
           Campaign started
         </h2>
-        <p className="text-[13.5px] text-[#646464] mb-7 max-w-[300px] leading-relaxed">
+        <p className="text-[15px] text-[#646464] dark:text-[#8a8680] mb-7 max-w-[300px] leading-relaxed">
           Sending to {success.totalRecipients} recipients using the{' '}
-          <span className="font-medium text-[#202020]">{shell}</span> template.
+          <span className="font-medium text-[#202020] dark:text-[#edeae4]">{shell}</span> template.
         </p>
         <div className="flex items-center gap-3">
           <Link to={`/campaigns/${success.campaignId}`} className={cn(buttonVariants({ size: 'sm' }))}>
@@ -163,37 +157,37 @@ export default function NewCampaign() {
     <div className="max-w-[640px]">
       <Link
         to="/"
-        className="inline-flex items-center gap-1.5 text-[#8d8d8d] hover:text-[#202020] text-[13px] font-medium mb-7 transition-colors duration-150"
+        className="inline-flex items-center gap-1.5 text-[#8d8d8d] dark:text-[#625e59] hover:text-[#202020] dark:hover:text-[#edeae4] text-[15px] font-medium mb-7 transition-colors duration-150"
       >
         <ArrowLeft size={14} />
         Back
       </Link>
 
       <h1
-        className="text-[22px] font-bold tracking-[-0.025em] text-[#202020] mb-1"
+        className="text-[22px] font-bold tracking-[-0.025em] text-[#202020] dark:text-[#edeae4] mb-1"
         style={{ fontFamily: 'var(--font-display)' }}
       >
         New campaign
       </h1>
-      <p className="text-[13px] text-[#646464] mb-7 leading-relaxed">
+      <p className="text-[15px] text-[#646464] dark:text-[#8a8680] mb-7 leading-relaxed">
         Use{' '}
-        <span className="font-mono text-[12px] bg-[#f3f0e8] text-[#8d8d8d] px-1.5 py-0.5 rounded-[4px]">{'{{Name}}'}</span>
+        <span className="font-mono text-[14px] bg-[#f3f0e8] dark:bg-[#252320] text-[#8d8d8d] dark:text-[#625e59] px-1.5 py-0.5 rounded-[4px]">{'{{Name}}'}</span>
         {' '}and{' '}
-        <span className="font-mono text-[12px] bg-[#f3f0e8] text-[#8d8d8d] px-1.5 py-0.5 rounded-[4px]">{'{{Email}}'}</span>
+        <span className="font-mono text-[14px] bg-[#f3f0e8] dark:bg-[#252320] text-[#8d8d8d] dark:text-[#625e59] px-1.5 py-0.5 rounded-[4px]">{'{{Email}}'}</span>
         {' '}to personalise each message.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {error && (
-          <div className="flex items-center gap-2.5 bg-red-50 border border-red-100 rounded-full px-4 py-3 text-red-600 text-[13px]">
+          <div className="flex items-center gap-2.5 bg-red-50 dark:bg-[#2a1515] border border-red-100 dark:border-red-900/40 rounded-full px-4 py-3 text-red-600 dark:text-red-400 text-[15px]">
             <Warning size={14} weight="fill" className="flex-shrink-0" />
             {error}
           </div>
         )}
 
-        {/* ── Template shell picker ── */}
+        {/* Template shell picker */}
         <div className="space-y-3">
-          <label className="block text-[13px] font-medium text-[#202020]">Email format</label>
+          <label className="block text-[15px] font-medium text-[#202020] dark:text-[#edeae4]">Email format</label>
           <div className="grid grid-cols-2 gap-3">
             {SHELLS.map(({ id, label, description, Thumb }) => (
               <button
@@ -203,25 +197,25 @@ export default function NewCampaign() {
                 className={cn(
                   'text-left rounded-[10px] border p-3 transition-all duration-150 space-y-2',
                   shell === id
-                    ? 'border-[#202020] bg-white shadow-[0_0_0_1px_#202020]'
-                    : 'border-[rgba(32,32,32,0.12)] bg-white hover:border-[rgba(32,32,32,0.28)]'
+                    ? 'border-[#202020] dark:border-[#edeae4] bg-white dark:bg-[#1c1b19] shadow-[0_0_0_1px_#202020] dark:shadow-[0_0_0_1px_#edeae4]'
+                    : 'border-[rgba(32,32,32,0.12)] dark:border-[rgba(255,250,240,0.10)] bg-white dark:bg-[#1c1b19] hover:border-[rgba(32,32,32,0.28)] dark:hover:border-[rgba(255,250,240,0.22)]'
                 )}
               >
                 <Thumb />
                 <div>
-                  <div className="text-[12.5px] font-semibold text-[#202020]">{label}</div>
-                  <div className="text-[11.5px] text-[#8d8d8d] leading-snug mt-0.5">{description}</div>
+                  <div className="text-[12.5px] font-semibold text-[#202020] dark:text-[#edeae4]">{label}</div>
+                  <div className="text-[14px] text-[#8d8d8d] dark:text-[#625e59] leading-snug mt-0.5">{description}</div>
                 </div>
               </button>
             ))}
           </div>
         </div>
 
-        <Separator className="bg-[rgba(32,32,32,0.08)]" />
+        <Separator className="bg-[rgba(32,32,32,0.08)] dark:bg-[rgba(255,250,240,0.07)]" />
 
-        {/* ── Subject ── */}
+        {/* Subject */}
         <div className="space-y-2">
-          <label className="block text-[13px] font-medium text-[#202020]">Subject line</label>
+          <label className="block text-[15px] font-medium text-[#202020] dark:text-[#edeae4]">Subject line</label>
           <Input
             type="text"
             value={subject}
@@ -231,12 +225,12 @@ export default function NewCampaign() {
           />
         </div>
 
-        <Separator className="bg-[rgba(32,32,32,0.08)]" />
+        <Separator className="bg-[rgba(32,32,32,0.08)] dark:bg-[rgba(255,250,240,0.07)]" />
 
-        {/* ── Reply-to ── */}
+        {/* Reply-to */}
         <div className="space-y-2">
-          <label className="block text-[13px] font-medium text-[#202020]">
-            Reply-to <span className="text-[#8d8d8d] font-normal">optional</span>
+          <label className="block text-[15px] font-medium text-[#202020] dark:text-[#edeae4]">
+            Reply-to <span className="text-[#8d8d8d] dark:text-[#625e59] font-normal">optional</span>
           </label>
           <Input
             type="email"
@@ -246,19 +240,19 @@ export default function NewCampaign() {
           />
         </div>
 
-        <Separator className="bg-[rgba(32,32,32,0.08)]" />
+        <Separator className="bg-[rgba(32,32,32,0.08)] dark:bg-[rgba(255,250,240,0.07)]" />
 
-        {/* ── Recipients file ── */}
+        {/* Recipients file */}
         <div className="space-y-2">
-          <label className="block text-[13px] font-medium text-[#202020]">Recipients file</label>
+          <label className="block text-[15px] font-medium text-[#202020] dark:text-[#edeae4]">Recipients file</label>
           <div
             className={cn(
               'relative border-2 border-dashed rounded-[10px] px-6 py-8 text-center cursor-pointer transition-all duration-150',
               dragOver
                 ? 'border-[#ea2804]/40 bg-[#ea2804]/[0.04]'
                 : file
-                ? 'border-[rgba(32,32,32,0.2)] bg-[#f3f0e8]'
-                : 'border-[rgba(32,32,32,0.15)] hover:border-[rgba(32,32,32,0.3)] hover:bg-[#f3f0e8]/60'
+                ? 'border-[rgba(32,32,32,0.2)] dark:border-[rgba(255,250,240,0.15)] bg-[#f3f0e8] dark:bg-[#252320]'
+                : 'border-[rgba(32,32,32,0.15)] dark:border-[rgba(255,250,240,0.10)] hover:border-[rgba(32,32,32,0.3)] dark:hover:border-[rgba(255,250,240,0.22)] hover:bg-[#f3f0e8]/60 dark:hover:bg-[#252320]/60'
             )}
             onDragOver={e => { e.preventDefault(); setDragOver(true); }}
             onDragLeave={() => setDragOver(false)}
@@ -274,17 +268,17 @@ export default function NewCampaign() {
             />
             {file ? (
               <div className="flex flex-col items-center gap-2">
-                <File size={24} weight="fill" className="text-[#202020]" />
-                <div className="text-[13.5px] font-semibold text-[#202020]">{file.name}</div>
-                <div className="text-[12px] text-[#8d8d8d]">
+                <File size={24} weight="fill" className="text-[#202020] dark:text-[#edeae4]" />
+                <div className="text-[15px] font-semibold text-[#202020] dark:text-[#edeae4]">{file.name}</div>
+                <div className="text-[14px] text-[#8d8d8d] dark:text-[#625e59]">
                   {(file.size / 1024).toFixed(1)} KB — click to change
                 </div>
               </div>
             ) : (
               <div className="flex flex-col items-center gap-2">
-                <UploadSimple size={24} className="text-[#8d8d8d]" />
-                <div className="text-[13.5px] font-medium text-[#202020]">Drop CSV or Excel file here</div>
-                <div className="text-[12px] text-[#8d8d8d]">
+                <UploadSimple size={24} className="text-[#8d8d8d] dark:text-[#625e59]" />
+                <div className="text-[15px] font-medium text-[#202020] dark:text-[#edeae4]">Drop CSV or Excel file here</div>
+                <div className="text-[14px] text-[#8d8d8d] dark:text-[#625e59]">
                   Must have Name and Email columns — click to browse
                 </div>
               </div>
@@ -292,23 +286,23 @@ export default function NewCampaign() {
           </div>
         </div>
 
-        <Separator className="bg-[rgba(32,32,32,0.08)]" />
+        <Separator className="bg-[rgba(32,32,32,0.08)] dark:bg-[rgba(255,250,240,0.07)]" />
 
-        {/* ── Email editor + preview ── */}
+        {/* Email editor + preview */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label className="block text-[13px] font-medium text-[#202020]">Email body</label>
-            <div className="flex items-center gap-1 bg-[#f3f0e8] rounded-full p-0.5">
+            <label className="block text-[15px] font-medium text-[#202020] dark:text-[#edeae4]">Email body</label>
+            <div className="flex items-center gap-1 bg-[#f3f0e8] dark:bg-[#252320] rounded-full p-0.5">
               {['editor', 'preview'].map(tab => (
                 <button
                   key={tab}
                   type="button"
                   onClick={() => setPreviewTab(tab)}
                   className={cn(
-                    'px-3.5 py-1.5 text-[12px] font-medium rounded-full transition-all duration-100',
+                    'px-3.5 py-1.5 text-[14px] font-medium rounded-full transition-all duration-100',
                     previewTab === tab
-                      ? 'bg-white text-[#202020] shadow-sm'
-                      : 'text-[#8d8d8d] hover:text-[#202020]'
+                      ? 'bg-white dark:bg-[#2a2825] text-[#202020] dark:text-[#edeae4] shadow-sm'
+                      : 'text-[#8d8d8d] dark:text-[#625e59] hover:text-[#202020] dark:hover:text-[#edeae4]'
                   )}
                 >
                   {tab === 'editor' ? 'Write' : 'Preview email'}
@@ -317,13 +311,12 @@ export default function NewCampaign() {
             </div>
           </div>
 
-          {/* Editor stays mounted so Tiptap's internal state survives tab switches — only visibility toggles */}
           <div className={previewTab === 'editor' ? '' : 'hidden'}>
             <EmailEditor key={editorKey} onChange={setEmailHtml} />
           </div>
 
           {previewTab === 'preview' && (
-            <div className="border border-[rgba(32,32,32,0.12)] rounded-[10px] overflow-hidden bg-[#f5f4f0] min-h-[360px]">
+            <div className="border border-[rgba(32,32,32,0.12)] dark:border-[rgba(255,250,240,0.10)] rounded-[10px] overflow-hidden bg-[#f5f4f0] dark:bg-[#111110] min-h-[360px]">
               {previewHtml ? (
                 <iframe
                   title="Email preview"
@@ -332,7 +325,7 @@ export default function NewCampaign() {
                   className="w-full h-[480px] border-none"
                 />
               ) : (
-                <div className="flex items-center justify-center h-[360px] text-[#8d8d8d] text-[13px]">
+                <div className="flex items-center justify-center h-[360px] text-[#8d8d8d] dark:text-[#625e59] text-[15px]">
                   Write some content first to see a preview
                 </div>
               )}
@@ -340,16 +333,16 @@ export default function NewCampaign() {
           )}
         </div>
 
-        {/* ── Actions ── */}
+        {/* Actions */}
         <div className="flex items-center gap-3 pt-2">
           <Button type="submit" disabled={loading} className="gap-1.5">
-            <PaperPlaneTilt size={14} weight="fill" />
+            <PaperPlaneTilt size={19} weight="fill" />
             {loading ? 'Starting...' : 'Send campaign'}
           </Button>
           <button
             type="button"
             onClick={handleCancel}
-            className={cn(buttonVariants({ variant: 'ghost' }), 'text-[#646464]')}
+            className={cn(buttonVariants({ variant: 'ghost' }), 'text-[#646464] dark:text-[#8a8680]')}
           >
             Cancel
           </button>

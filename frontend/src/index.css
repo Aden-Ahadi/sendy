@@ -108,7 +108,7 @@
   * { @apply border-border; }
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    font-size: 14px;
+    font-size: 16px;
     line-height: 1.5;
     color: #202020;
   }
@@ -118,16 +118,19 @@
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(32,32,32,0.1); border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(32,32,32,0.2); }
+.dark ::-webkit-scrollbar-thumb { background: rgba(255,250,240,0.1); }
+.dark ::-webkit-scrollbar-thumb:hover { background: rgba(255,250,240,0.2); }
 
 /* Tiptap WYSIWYG */
 .tiptap-editor .ProseMirror {
   outline: none;
   min-height: 280px;
   padding: 20px 24px;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.7;
   color: #202020;
 }
+.dark .tiptap-editor .ProseMirror { color: #edeae4; }
 .tiptap-editor .ProseMirror p { margin: 0; }
 .tiptap-editor .ProseMirror h1 {
   font-size: 22px; font-weight: 700;

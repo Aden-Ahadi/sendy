@@ -22,8 +22,8 @@ function ToolbarButton({ onClick, active, title, children }) {
       title={title}
       className={`p-1.5 rounded-md transition-colors duration-100 ${
         active
-          ? 'bg-[#202020] text-white'
-          : 'text-[#646464] hover:bg-[rgba(32,32,32,0.07)] hover:text-[#202020]'
+          ? 'bg-[#202020] dark:bg-[#edeae4] text-white dark:text-[#141412]'
+          : 'text-[#505050] dark:text-[#a8a49f] hover:bg-[rgba(32,32,32,0.07)] dark:hover:bg-[rgba(255,250,240,0.07)] hover:text-[#202020] dark:hover:text-[#edeae4]'
       }`}
     >
       {children}
@@ -32,7 +32,7 @@ function ToolbarButton({ onClick, active, title, children }) {
 }
 
 function Divider() {
-  return <div className="w-px h-4 bg-[rgba(32,32,32,0.12)] mx-0.5" />;
+  return <div className="w-px h-4 bg-[rgba(32,32,32,0.12)] dark:bg-[rgba(255,250,240,0.10)] mx-0.5" />;
 }
 
 export default function EmailEditor({ onChange, initialHtml = '' }) {
@@ -72,9 +72,9 @@ export default function EmailEditor({ onChange, initialHtml = '' }) {
   if (!editor) return null;
 
   return (
-    <div className="border border-[rgba(32,32,32,0.12)] rounded-xl overflow-hidden bg-white">
+    <div className="border border-[rgba(32,32,32,0.12)] dark:border-[rgba(255,250,240,0.10)] rounded-xl overflow-hidden bg-white dark:bg-[#1c1b19]">
       {/* Toolbar */}
-      <div className="flex items-center gap-0.5 px-3 py-2 border-b border-[rgba(32,32,32,0.08)] bg-[#f3f0e8]">
+      <div className="flex items-center gap-0.5 px-3 py-2 border-b border-[rgba(32,32,32,0.08)] dark:border-[rgba(255,250,240,0.07)] bg-[#f3f0e8] dark:bg-[#252320]">
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
           active={editor.isActive('bold')}

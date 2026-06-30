@@ -15,7 +15,7 @@ function SubjectDisplay({ subject }) {
           return (
             <span
               key={i}
-              className="inline-block align-middle bg-[#f3f0e8] text-[#8d8d8d] text-[10px] px-1.5 py-0.5 rounded-[4px] font-mono leading-none mx-0.5"
+              className="inline-block align-middle bg-[#f3f0e8] dark:bg-[#252320] text-[#8d8d8d] dark:text-[#625e59] text-[10px] px-1.5 py-0.5 rounded-[4px] font-mono leading-none mx-0.5"
             >
               {match[1]}
             </span>
@@ -120,13 +120,13 @@ export default function CampaignDetail() {
   if (loading) {
     return (
       <div className="space-y-5 animate-pulse">
-        <div className="h-4 w-16 bg-[#f3f0e8] rounded" />
-        <div className="h-7 w-80 bg-[#f3f0e8] rounded" />
+        <div className="h-4 w-16 bg-[#f3f0e8] dark:bg-[#252320] rounded" />
+        <div className="h-7 w-80 bg-[#f3f0e8] dark:bg-[#252320] rounded" />
         <div className="grid grid-cols-4 gap-3 mt-4">
           {[0,1,2,3].map(i => (
-            <div key={i} className="bg-[#f3f0e8] rounded-[10px] px-5 py-4">
-              <div className="h-3 w-16 bg-[#ede9df] rounded mb-3" />
-              <div className="h-8 w-10 bg-[#ede9df] rounded" />
+            <div key={i} className="bg-[#f3f0e8] dark:bg-[#252320] rounded-[10px] px-5 py-4">
+              <div className="h-3 w-16 bg-[#ede9df] dark:bg-[#2e2c29] rounded mb-3" />
+              <div className="h-8 w-10 bg-[#ede9df] dark:bg-[#2e2c29] rounded" />
             </div>
           ))}
         </div>
@@ -137,10 +137,10 @@ export default function CampaignDetail() {
   if (error) {
     return (
       <div>
-        <Link to="/" className="inline-flex items-center gap-1.5 text-[#8d8d8d] hover:text-[#202020] text-[13px] font-medium mb-6 transition-colors">
+        <Link to="/" className="inline-flex items-center gap-1.5 text-[#8d8d8d] dark:text-[#625e59] hover:text-[#202020] dark:hover:text-[#edeae4] text-[16px] font-medium mb-6 transition-colors">
           <ArrowLeft size={14} /> Back
         </Link>
-        <div className="bg-red-50 border border-red-100 rounded-lg px-4 py-3 text-red-600 text-[13px]">{error}</div>
+        <div className="bg-red-50 dark:bg-[#2a1515] border border-red-100 dark:border-red-900/40 rounded-lg px-4 py-3 text-red-600 dark:text-red-400 text-[16px]">{error}</div>
       </div>
     );
   }
@@ -151,7 +151,7 @@ export default function CampaignDetail() {
     <div>
       <Link
         to="/"
-        className="inline-flex items-center gap-1.5 text-[#8d8d8d] hover:text-[#202020] text-[13px] font-medium mb-6 transition-colors duration-150"
+        className="inline-flex items-center gap-1.5 text-[#8d8d8d] dark:text-[#625e59] hover:text-[#202020] dark:hover:text-[#edeae4] text-[16px] font-medium mb-6 transition-colors duration-150"
       >
         <ArrowLeft size={14} />
         All campaigns
@@ -160,7 +160,7 @@ export default function CampaignDetail() {
       {/* Header */}
       <div className="flex items-start gap-3 mb-1">
         <h1
-          className="text-[22px] font-bold tracking-[-0.025em] text-[#202020] leading-snug flex-1"
+          className="text-[22px] font-bold tracking-[-0.025em] text-[#202020] dark:text-[#edeae4] leading-snug flex-1"
           style={{ fontFamily: 'var(--font-display)' }}
         >
           <SubjectDisplay subject={campaign.subject} />
@@ -171,24 +171,27 @@ export default function CampaignDetail() {
             type="button"
             onClick={() => setConfirmDelete(true)}
             title="More options"
-            className="w-7 h-7 flex items-center justify-center rounded-full text-[#8d8d8d] hover:text-[#202020] hover:bg-[rgba(32,32,32,0.06)] transition-all duration-150"
+            className="w-7 h-7 flex items-center justify-center rounded-full text-[#8d8d8d] dark:text-[#625e59] hover:text-[#202020] dark:hover:text-[#edeae4] hover:bg-[rgba(32,32,32,0.06)] dark:hover:bg-[rgba(255,250,240,0.07)] transition-all duration-150"
           >
             <DotsThreeVertical size={16} weight="bold" />
           </button>
         </div>
       </div>
+
       <div className="flex items-center justify-between mb-8">
-        <p className="text-[12.5px] text-[#8d8d8d]">
+        <p className="text-[16px] text-[#8d8d8d] dark:text-[#625e59]">
           {formatDate(campaign.created_at)}
           {campaign.reply_to && (
-            <span className="ml-3 pl-3 border-l border-[rgba(32,32,32,0.12)]">Reply-to: {campaign.reply_to}</span>
+            <span className="ml-3 pl-3 border-l border-[rgba(32,32,32,0.12)] dark:border-[rgba(255,250,240,0.10)]">
+              Reply-to: {campaign.reply_to}
+            </span>
           )}
         </p>
         {previewHtml && (
           <button
             type="button"
             onClick={() => setShowPreview(v => !v)}
-            className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-[#646464] hover:text-[#202020] transition-colors duration-150"
+            className="inline-flex items-center gap-1.5 text-[16px] font-medium text-[#646464] dark:text-[#8a8680] hover:text-[#202020] dark:hover:text-[#edeae4] transition-colors duration-150"
           >
             {showPreview ? <EyeSlash size={14} /> : <Eye size={14} />}
             {showPreview ? 'Hide email' : 'Preview email'}
@@ -197,12 +200,12 @@ export default function CampaignDetail() {
       </div>
 
       {showPreview && previewHtml && (
-        <div className="bg-white border border-[rgba(32,32,32,0.08)] rounded-[10px] overflow-hidden mb-6 shadow-[0_2px_8px_rgba(32,32,32,0.04)]">
-          <div className="px-5 py-3 border-b border-[rgba(32,32,32,0.07)] flex items-center justify-between">
-            <span className="text-[12px] font-medium text-[#8d8d8d] uppercase tracking-wider">
+        <div className="bg-white dark:bg-[#1c1b19] border border-[rgba(32,32,32,0.08)] dark:border-[rgba(255,250,240,0.07)] rounded-[10px] overflow-hidden mb-6 shadow-[0_2px_8px_rgba(32,32,32,0.04)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)]">
+          <div className="px-5 py-3 border-b border-[rgba(32,32,32,0.07)] dark:border-[rgba(255,250,240,0.07)] flex items-center justify-between">
+            <span className="text-[14px] font-medium text-[#8d8d8d] dark:text-[#625e59] uppercase tracking-wider">
               Email preview
             </span>
-            <span className="text-[11px] text-[#8d8d8d] capitalize">{campaign.template_shell || 'minimal'} template</span>
+            <span className="text-[13px] text-[#8d8d8d] dark:text-[#625e59] capitalize">{campaign.template_shell || 'minimal'} template</span>
           </div>
           <iframe
             title="Sent email preview"
@@ -213,31 +216,24 @@ export default function CampaignDetail() {
         </div>
       )}
 
-      {/* Delivery bars — chronological mode using per-recipient logs */}
-      <div className="bg-white border border-[rgba(32,32,32,0.08)] rounded-[10px] px-5 py-4 mb-6 shadow-[0_2px_8px_rgba(32,32,32,0.04)]">
+      {/* Delivery timeline */}
+      <div className="bg-white dark:bg-[#1c1b19] border border-[rgba(32,32,32,0.08)] dark:border-[rgba(255,250,240,0.07)] rounded-[10px] px-5 py-4 mb-6 shadow-[0_2px_8px_rgba(32,32,32,0.04)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)]">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            {isSending && <Clock size={13} className="text-[#8d8d8d]" />}
-            <span className="text-[12px] font-medium text-[#8d8d8d] uppercase tracking-wider">
+            {isSending && <Clock size={13} className="text-[#8d8d8d] dark:text-[#625e59]" />}
+            <span className="text-[14px] font-medium text-[#8d8d8d] dark:text-[#625e59] uppercase tracking-wider">
               Delivery timeline
             </span>
           </div>
-          <span className="text-[13px] font-semibold tabular-nums text-[#202020]">
+          <span className="text-[16px] font-semibold tabular-nums text-[#202020] dark:text-[#edeae4]">
             {sent.toLocaleString()} / {total.toLocaleString()}
           </span>
         </div>
-
-        <DeliveryBars
-          total={total}
-          sent={sent}
-          failed={failed}
-          logs={logs}
-          status={campaign.status}
-        />
+        <DeliveryBars total={total} sent={sent} failed={failed} logs={logs} status={campaign.status} />
         <DeliveryLegend total={total} sent={sent} failed={failed} />
       </div>
 
-      {/* Stats — bone tiles */}
+      {/* Stats */}
       <div className="grid grid-cols-4 gap-3 mb-8">
         {[
           { label: 'Total',        value: total.toLocaleString() },
@@ -245,12 +241,12 @@ export default function CampaignDetail() {
           { label: 'Failed',       value: failed.toLocaleString() },
           { label: 'Success rate', value: `${rate}%` },
         ].map(stat => (
-          <div key={stat.label} className="bg-[#f3f0e8] rounded-[10px] px-5 py-4">
-            <div className="text-[11px] text-[#8d8d8d] font-medium uppercase tracking-wider mb-1.5">
+          <div key={stat.label} className="bg-[#f3f0e8] dark:bg-[#252320] rounded-[10px] px-5 py-4">
+            <div className="text-[13px] text-[#8d8d8d] dark:text-[#625e59] font-medium uppercase tracking-wider mb-1.5">
               {stat.label}
             </div>
             <div
-              className="text-[26px] font-bold tracking-[-0.03em] tabular-nums text-[#202020] leading-none"
+              className="text-[26px] font-bold tracking-[-0.03em] tabular-nums text-[#202020] dark:text-[#edeae4] leading-none"
               style={{ fontFamily: 'var(--font-display)' }}
             >
               {stat.value}
@@ -260,13 +256,13 @@ export default function CampaignDetail() {
       </div>
 
       {/* Log table */}
-      <div className="bg-white border border-[rgba(32,32,32,0.08)] rounded-[10px] overflow-hidden shadow-[0_2px_8px_rgba(32,32,32,0.04)]">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[rgba(32,32,32,0.07)]">
-          <h2 className="text-[14px] font-semibold text-[#202020]">
+      <div className="bg-white dark:bg-[#1c1b19] border border-[rgba(32,32,32,0.08)] dark:border-[rgba(255,250,240,0.07)] rounded-[10px] overflow-hidden shadow-[0_2px_8px_rgba(32,32,32,0.04)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)]">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[rgba(32,32,32,0.07)] dark:border-[rgba(255,250,240,0.07)]">
+          <h2 className="text-[16px] font-semibold text-[#202020] dark:text-[#edeae4]">
             Recipient log
-            <span className="ml-2 text-[#8d8d8d] font-normal text-[13px]">{logs.length}</span>
+            <span className="ml-2 text-[#8d8d8d] dark:text-[#625e59] font-normal text-[16px]">{logs.length}</span>
           </h2>
-          <div className="flex items-center gap-1 bg-[#f3f0e8] rounded-full p-0.5">
+          <div className="flex items-center gap-1 bg-[#f3f0e8] dark:bg-[#252320] rounded-full p-0.5">
             {[
               { key: 'all',     label: 'All' },
               { key: 'success', label: 'Sent' },
@@ -275,10 +271,10 @@ export default function CampaignDetail() {
               <button
                 key={f.key}
                 onClick={() => setFilter(f.key)}
-                className={`px-3.5 py-1.5 text-[12px] font-medium rounded-full transition-all duration-100 ${
+                className={`px-3.5 py-1.5 text-[14px] font-medium rounded-full transition-all duration-100 ${
                   filter === f.key
-                    ? 'bg-white text-[#202020] shadow-sm'
-                    : 'text-[#8d8d8d] hover:text-[#202020]'
+                    ? 'bg-white dark:bg-[#2a2825] text-[#202020] dark:text-[#edeae4] shadow-sm'
+                    : 'text-[#8d8d8d] dark:text-[#625e59] hover:text-[#202020] dark:hover:text-[#edeae4]'
                 }`}
               >
                 {f.label}
@@ -289,9 +285,9 @@ export default function CampaignDetail() {
 
         <table className="w-full border-collapse">
           <thead>
-            <tr className="bg-[#f9f7f3] border-b border-[rgba(32,32,32,0.07)]">
+            <tr className="bg-[#f9f7f3] dark:bg-[#141412] border-b border-[rgba(32,32,32,0.07)] dark:border-[rgba(255,250,240,0.07)]">
               {['Name', 'Email', 'Status', 'Sent at', 'Error'].map(h => (
-                <th key={h} className="text-left px-5 py-3 text-[11px] font-medium text-[#8d8d8d] uppercase tracking-wider">
+                <th key={h} className="text-left px-5 py-3 text-[13px] font-medium text-[#8d8d8d] dark:text-[#625e59] uppercase tracking-wider">
                   {h}
                 </th>
               ))}
@@ -300,7 +296,7 @@ export default function CampaignDetail() {
           <tbody>
             {filteredLogs.length === 0 ? (
               <tr>
-                <td colSpan={5} className="text-center py-10 text-[#8d8d8d] text-[13px]">
+                <td colSpan={5} className="text-center py-10 text-[#8d8d8d] dark:text-[#625e59] text-[16px]">
                   {logs.length === 0
                     ? isSending ? 'Sending in progress...' : 'No logs yet.'
                     : `No ${filter} emails.`}
@@ -310,27 +306,27 @@ export default function CampaignDetail() {
               filteredLogs.map(log => (
                 <tr
                   key={log.id}
-                  className="border-b border-[rgba(32,32,32,0.06)] last:border-0 hover:bg-[#f9f7f3] transition-colors duration-100"
+                  className="border-b border-[rgba(32,32,32,0.06)] dark:border-[rgba(255,250,240,0.06)] last:border-0 hover:bg-[#f9f7f3] dark:hover:bg-[#141412] transition-colors duration-100"
                 >
-                  <td className="px-5 py-3 text-[13px] font-medium text-[#202020]">
+                  <td className="px-5 py-3 text-[16px] font-medium text-[#202020] dark:text-[#edeae4]">
                     {log.recipient_name || '-'}
                   </td>
-                  <td className="px-5 py-3 text-[13px] text-[#646464]">{log.recipient_email}</td>
+                  <td className="px-5 py-3 text-[16px] text-[#646464] dark:text-[#8a8680]">{log.recipient_email}</td>
                   <td className="px-5 py-3">
                     {log.status === 'success' ? (
-                      <span className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#202020]">
+                      <span className="inline-flex items-center gap-1.5 text-[16px] font-medium text-[#202020] dark:text-[#edeae4]">
                         <CheckCircle size={14} weight="fill" className="text-[#2b9a66]" />
                         Sent
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#646464]">
+                      <span className="inline-flex items-center gap-1.5 text-[16px] font-medium text-[#646464] dark:text-[#8a8680]">
                         <XCircle size={14} weight="fill" className="text-red-500" />
                         Failed
                       </span>
                     )}
                   </td>
-                  <td className="px-5 py-3 text-[12px] text-[#8d8d8d]">{formatDate(log.created_at)}</td>
-                  <td className="px-5 py-3 text-[12px] text-red-500 max-w-[200px] truncate" title={log.error || ''}>
+                  <td className="px-5 py-3 text-[14px] text-[#8d8d8d] dark:text-[#625e59]">{formatDate(log.created_at)}</td>
+                  <td className="px-5 py-3 text-[14px] text-red-500 dark:text-red-400 max-w-[200px] truncate" title={log.error || ''}>
                     {log.error || '-'}
                   </td>
                 </tr>
@@ -344,20 +340,20 @@ export default function CampaignDetail() {
       {confirmDelete && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          style={{ background: 'rgba(32,32,32,0.35)' }}
+          style={{ background: 'rgba(14,13,12,0.6)' }}
           onClick={() => !deleting && setConfirmDelete(false)}
         >
           <div
-            className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl"
+            className="bg-white dark:bg-[#1c1b19] rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-transparent dark:border-[rgba(255,250,240,0.08)]"
             onClick={e => e.stopPropagation()}
           >
             <h2
-              className="text-[17px] font-bold text-[#202020] mb-1 tracking-[-0.02em]"
+              className="text-[17px] font-bold text-[#202020] dark:text-[#edeae4] mb-1 tracking-[-0.02em]"
               style={{ fontFamily: 'var(--font-display)' }}
             >
               Delete this campaign?
             </h2>
-            <p className="text-[13px] text-[#646464] leading-relaxed mb-6">
+            <p className="text-[16px] text-[#646464] dark:text-[#8a8680] leading-relaxed mb-6">
               This will permanently remove the campaign and all its delivery logs. There's no way to undo this.
             </p>
             <div className="flex items-center justify-end gap-2">
@@ -365,7 +361,7 @@ export default function CampaignDetail() {
                 type="button"
                 onClick={() => setConfirmDelete(false)}
                 disabled={deleting}
-                className="px-4 py-2 text-[13px] font-medium text-[#646464] hover:text-[#202020] rounded-full transition-colors duration-150 disabled:opacity-40"
+                className="px-4 py-2 text-[16px] font-medium text-[#646464] dark:text-[#8a8680] hover:text-[#202020] dark:hover:text-[#edeae4] rounded-full transition-colors duration-150 disabled:opacity-40"
               >
                 Cancel
               </button>
@@ -373,7 +369,7 @@ export default function CampaignDetail() {
                 type="button"
                 onClick={handleDelete}
                 disabled={deleting}
-                className="px-4 py-2 text-[13px] font-semibold text-white bg-[#dc2626] hover:bg-[#b91c1c] active:scale-[0.98] rounded-full transition-all duration-150 disabled:opacity-50"
+                className="px-4 py-2 text-[16px] font-semibold text-white bg-[#dc2626] hover:bg-[#b91c1c] active:scale-[0.98] rounded-full transition-all duration-150 disabled:opacity-50"
               >
                 {deleting ? 'Deleting…' : 'Delete campaign'}
               </button>
