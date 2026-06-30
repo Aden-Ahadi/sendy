@@ -90,7 +90,7 @@ function shellBranded(body: string): string {
   const logoUrl = Deno.env.get('BRAND_LOGO_URL') ?? null;
 
   const headerContent = logoUrl
-    ? `<img src="${logoUrl}" width="600" alt="${BRAND_NAME}" style="display:block;width:100%;height:auto;border:0;border-radius:8px 8px 0 0;">`
+    ? `<img src="${logoUrl}" width="360" alt="${BRAND_NAME}" style="display:block;width:360px;max-width:100%;height:auto;margin:0 auto;border:0;">`
     : `<div style="padding:24px 32px;text-align:center;"><span style="font-size:17px;font-weight:700;color:#111111;letter-spacing:-0.3px;">${BRAND_NAME}</span></div>`;
 
   return `<!DOCTYPE html>
@@ -103,10 +103,8 @@ function shellBranded(body: string): string {
   /* Dark mode — logo image carries its own background so no override needed there */
   u + .body .body-cell   { background-color: #1c1b19 !important; color: #edeae4 !important; }
   u + .body .footer-cell { background-color: #141412 !important; color: #8a8680 !important; }
-  u + .body .outer-td    { background-color: #0f0e0c !important; }
 
   @media (prefers-color-scheme: dark) {
-    .outer-td    { background-color: #0f0e0c !important; }
     .body-cell   { background-color: #1c1b19 !important; color: #edeae4 !important; }
     .footer-cell { background-color: #141412 !important; color: #8a8680 !important; border-top-color: #2a2825 !important; }
   }
@@ -123,8 +121,8 @@ function shellBranded(body: string): string {
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f4f0;">
 <tr><td class="outer-td" align="center" style="padding:32px 16px;">
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;">
-  <!-- Logo header — full-width banner, image carries its own background -->
-  <tr><td class="logo-cell" style="padding:0;line-height:0;font-size:0;border-bottom:1px solid #eaeaea;overflow:hidden;border-radius:8px 8px 0 0;">
+  <!-- Logo header -->
+  <tr><td class="logo-cell" style="background-color:#ffffff;padding:20px 24px;text-align:center;border-bottom:1px solid #eaeaea;border-radius:8px 8px 0 0;">
     ${headerContent}
   </td></tr>
   <!-- Body -->

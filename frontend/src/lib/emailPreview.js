@@ -32,8 +32,8 @@ export function buildPreviewHtml(shell, content) {
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f5f4f0;">
 <tr><td align="center" style="padding:32px 16px;">
 <table cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;">
-  <tr><td style="border-radius:8px 8px 0 0;border-bottom:1px solid #eaeaea;padding:0;line-height:0;font-size:0;overflow:hidden;">
-    <img src="/brand_logo.jpg" width="600" alt="${BRAND_NAME}" style="display:block;width:100%;height:auto;border-radius:8px 8px 0 0;">
+  <tr><td style="background:#fff;border-radius:8px 8px 0 0;border-bottom:1px solid #eaeaea;padding:20px 24px;text-align:center;">
+    <img src="/brand_logo.jpg" width="360" alt="${BRAND_NAME}" style="display:block;width:360px;max-width:100%;height:auto;margin:0 auto;">
   </td></tr>
   <tr><td class="body-cell" style="background:#fff;padding:32px 32px;">${content}</td></tr>
   <tr><td style="background:#f9f8f5;border-radius:0 0 8px 8px;padding:18px 32px;border-top:1px solid #eaeaea;text-align:center;font-size:12px;color:#999;line-height:1.8;">
