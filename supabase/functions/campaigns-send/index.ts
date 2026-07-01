@@ -201,7 +201,6 @@ async function sendEmailsAsync(
   emailTemplate: string,   // fully-wrapped, styled HTML — tokens replaced per recipient
   subject: string,
   transporter: nodemailer.Transporter,
-  replyTo: string | null,
   supabase: SupabaseClient,
 ) {
   const delay       = parseInt(Deno.env.get('EMAIL_DELAY')         ?? '1000');
@@ -234,7 +233,6 @@ async function sendEmailsAsync(
           subject: processedSubject,
           html,
           text:    plainText,
-          ...(replyTo ? { replyTo } : {}),
           headers: {
             'X-Entity-Ref-ID': Math.random().toString(36).slice(2),
             'Precedence':       'bulk',
@@ -298,9 +296,8 @@ Deno.serve(async (req) => {
     if (authErr || !user) return json({ error: 'Unauthorized' }, 401);
 
     const formData    = await req.formData();
-    const subject     = formData.get('subject')       as string | null;
-    const emailContent= formData.get('emailContent')  as string | null;
-    const replyTo     = (formData.get('replyTo')      as string | null) || null;
+    const subject       = formData.get('subject')        as string | null;
+    const emailContent  = formData.get('emailContent')   as string | null;
     const templateShell = (formData.get('templateShell') as string | null) ?? 'minimal';
     const file        = formData.get('recipientsFile') as File | null;
 
@@ -328,7 +325,6 @@ Deno.serve(async (req) => {
       campaign_id:       campaignId,
       subject,
       total_recipients:  recipients.length,
-      reply_to:          replyTo,
       template_shell:    templateShell,
       email_content:     emailContent,
       status:            'sending',
@@ -350,7 +346,7 @@ Deno.serve(async (req) => {
 
     // deno-lint-ignore no-explicit-any
     (globalThis as any).EdgeRuntime?.waitUntil(
-      sendEmailsAsync(campaignId, recipients, emailTemplate, subject, transporter, replyTo, supabase)
+      sendEmailsAsync(campaignId, recipients, emailTemplate, subject, transporter, supabase)
         .catch(async (err) => {
           console.error('sendEmailsAsync fatal error:', err);
           await supabase.from('campaigns').update({ status: 'failed' }).eq('campaign_id', campaignId);

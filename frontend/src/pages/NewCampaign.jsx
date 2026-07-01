@@ -61,7 +61,6 @@ export default function NewCampaign() {
 
   const [shell,       setShell]       = useState(DEFAULT_SHELL);
   const [subject,     setSubject]     = useState('');
-  const [replyTo,     setReplyTo]     = useState('');
   const [file,        setFile]        = useState(null);
   const [dragOver,    setDragOver]    = useState(false);
   const [emailHtml,   setEmailHtml]   = useState('');
@@ -74,7 +73,6 @@ export default function NewCampaign() {
   function handleCancel() {
     setShell(DEFAULT_SHELL);
     setSubject('');
-    setReplyTo('');
     setFile(null);
     setDragOver(false);
     setEmailHtml('');
@@ -108,7 +106,6 @@ export default function NewCampaign() {
       formData.append('subject',        subject);
       formData.append('emailContent',   emailHtml);
       formData.append('templateShell',  shell);
-      if (replyTo) formData.append('replyTo', replyTo);
 
       const data = await api.sendCampaign(formData);
       setSuccess(data);
@@ -222,21 +219,6 @@ export default function NewCampaign() {
             onChange={e => setSubject(e.target.value)}
             placeholder="Hello {{Name}}, here's what's new"
             required
-          />
-        </div>
-
-        <Separator className="bg-[rgba(32,32,32,0.08)] dark:bg-[rgba(255,250,240,0.07)]" />
-
-        {/* Reply-to */}
-        <div className="space-y-2">
-          <label className="block text-[15px] font-medium text-[#202020] dark:text-[#edeae4]">
-            Reply-to <span className="text-[#8d8d8d] dark:text-[#625e59] font-normal">optional</span>
-          </label>
-          <Input
-            type="email"
-            value={replyTo}
-            onChange={e => setReplyTo(e.target.value)}
-            placeholder="you@company.com"
           />
         </div>
 
